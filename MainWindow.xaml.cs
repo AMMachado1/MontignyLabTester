@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Services.Description;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,153 +17,174 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using TensileTesterSharer.ViewModel;
+
 
 namespace TensileTesterSharer
 {
+    public class SharedVariables
+    {
+        public static double EncoderScaled { get; set; }
+        public static double LoadcellScaled { get; set; }
+        public static double EncoderRaw;
+        public static double LoadcellRaw;
+        public static int AnaTest;
+        public static double LoadTest;
+        public static bool Servo_Rdy;
+        public static bool Servo_ZSpd;
+        
+    }
+    
+    public class DataGenerator
+    {
+       
+        public int DataCount = 50000;
+        private int RateOfData = 5;
+        private ObservableCollection<Data> Data;
+        private Random randomNumber;
+        int myindex = 0;
+        DispatcherTimer timer;
+        
+        public ObservableCollection<Data> DynamicData { get; set; }
+        
+        public DataGenerator()
+        {
+
+
+            randomNumber = new Random();
+            DynamicData = new ObservableCollection<Data>();
+            Data = new ObservableCollection<Data>();
+            Data = GenerateData();
+           
+            // LoadData();
+
+            timer = new DispatcherTimer();
+                timer.Tick += timer_Tick;
+                timer.Interval = new TimeSpan(0, 0, 0, 0,10);
+                timer.Start();
+           
+        }
+        
+
+        public void AddData()
+        {
+            DateTime date = new DateTime(2009, 1, 1);
+            date = date.Add(TimeSpan.FromSeconds(1));
+            double force = SharedVariables.LoadcellScaled;
+            double enc = SharedVariables.EncoderScaled;
+            int ana = SharedVariables.AnaTest;
+
+            DynamicData.Add(new Data(date, force, enc, ana));
+            
+                
+         }
+        
+        public ObservableCollection<Data> GenerateData()
+        {
+            ObservableCollection<Data> datas = new ObservableCollection<Data>();
+
+            DateTime date = new DateTime(2009, 1, 1);
+            double force = SharedVariables.LoadcellScaled;
+            double enc = SharedVariables.EncoderScaled;
+            int ana = SharedVariables.AnaTest;
+           
+            for (int i = 0; i < this.DataCount; i++)
+            {
+                datas.Add(new Data(date, force, enc, ana));
+                date = date.Add(TimeSpan.FromSeconds(1));
+                
+                    force = SharedVariables.LoadcellScaled;
+                    enc = SharedVariables.EncoderScaled;
+                    ana = SharedVariables.AnaTest;
+
+            }
+            
+            return datas;
+        }
+        
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            AddData();
+        }
+        
+    }
+    
+
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public double EncoderRaw = 0;
-        public float EncoderScaled = 0;
-        public float LoadcellRaw = 0;
         public float LoadcellScaled = 0;
         public int ManSpeed = 0;
         public int AutoSpeedTest = 0;
         public int AutoSpeedApproach = 0;
-        
+        public SharerConnection connection;
         public bool ManSelect;
         public bool ManUP;
         public bool ManDown;
-        public SharerConnection connection;
+        public bool Autostart;
         private int isWorking;
-        private System.Threading.Timer UITimer;
-        //public connection;
+        private System.Threading.Timer ReadArduinoTmr;
+
+        DispatcherTimer UpdateUItmr;
+
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new ViewModel();
-            txt_SpeedRef.Value = 0;
+            
+            sldManSpd.Value = 0;
             string[] ports = SerialPort.GetPortNames();
             foreach (string comport in ports)
             {
                 cmb_Port.Items.Add(comport);
             }
             connect();
-            
+           
         }
 
         public void connect()
         {
-            connection = new SharerConnection("COM23", 115200);
-            //connection = new SharerConnection(cmb_Port.Text, 115200);
-            connection.Connect();
-            connection.RefreshFunctions();
+            try
+            {
+                connection = new SharerConnection("COM23", 115200);
+                //connection = new SharerConnection(cmb_Port.Text, 115200);
+                connection.Connect();
+                connection.RefreshFunctions();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Please Check Connection!!");
+                
+            }
+            
 
             if (connection.Connected)
             {
-                UITimer = new System.Threading.Timer(UpdateUI, null, 500, 500);
+                ReadArduinoTmr = new System.Threading.Timer(ReadArduino, null, 500, 200);
                 var CalFactorTemp = connection.ReadVariable("calibration_factor");
                 txt_CalFactor.Value = Convert.ToInt32(CalFactorTemp.Value);
+
+                UpdateUItmr = new DispatcherTimer();
+                UpdateUItmr.Tick += UpdateUItmr_Tick;
+                UpdateUItmr.Interval = new TimeSpan(0, 0, 0, 0, 200);
+                UpdateUItmr.Start();
 
             }
             else
             {
                 MessageBox.Show("Cannot Connect, Please check Cabling and Retry");
             }
-
+            
         }
 
-        #region Charts
         
-        public class Model
-        {
-            public TimeSpan XValue { get; set; }
-            public double YValue { get; set; }
-        }
-
-        public class ViewModel
-        {
-            public int Index { get; set; }
-
-            public ViewModel()
-            {
-                Data = new ObservableCollection<Model>();
-                Random rand = new Random();
-
-                var random = new Random();
-                for (int i = 0; i < 100; i++)
-                {
-                    Data.Add(new Model() { XValue = TimeSpan.FromSeconds(Index), YValue = rand.Next(50, 100) });
-                    Index++;
-                }
-            }
-
-            public ObservableCollection<Model> Data { get; set; }
-        }
-        #endregion
-
-        private void btn_Up_Click(object sender, RoutedEventArgs e)
+        public void ReadArduino(object state)
         {
            
-            if (ManUP == false && ManSelect == true && ManDown == false)
-            {
-                var Up = connection.Call("SlideUp");
-                btn_Up.Content = "Stop";
-                ManUP = true;
-            }
-            else
-            {
-                var Up = connection.Call("SlideUpStop");
-                btn_Up.Content = "Up";
-                ManUP = false;
-            }
 
-        }
-
-        private void btn_Down_Click(object sender, RoutedEventArgs e)
-        {
-            if (ManDown == false && ManSelect == true && ManUP == false)
-            {
-                var Up = connection.Call("SlideDown");
-                btn_Down.Content = "Stop";
-                ManDown = true;
-            }
-            else
-            {
-                var Up = connection.Call("SlideDownStop");
-                btn_Down.Content = "Down";
-                ManDown = false;
-            }
-
-        }
-
-        private void btn_Man_Click(object sender, RoutedEventArgs e)
-        {
-            if (ManSelect == false)
-            {
-                btn_Man.Content = "Manual";
-                ManSelect = true;
-               
-            }
-            else
-            {
-                btn_Man.Content = "Auto";
-                ManSelect = false;
-                var Up = connection.Call("SlideUpStop");
-                ManUP = false;
-                btn_Up.Content = "Up";
-                var Down = connection.Call("SlideDownStop");
-                btn_Down.Content = "Down";
-                ManDown = false;
-            }
-
-        }
-
-        private void UpdateUI(object state)
-        {
             if (connection.Connected)
             {
 
@@ -173,14 +195,13 @@ namespace TensileTesterSharer
 
                         try
                         {
-                        //txt_Force.Text = connection.Call("analogRead", 0).ToString();
-                            var values = connection.ReadVariables(new string[] { "counter", "Loadcell_Mass" });
-                            EncoderRaw = Convert.ToInt32(values[0].Value);
-                            EncoderScaled = ((float)(EncoderRaw / 300.0));
-                            txt_Dist.Text = EncoderScaled.ToString();
-                            gaugeDist.Value = EncoderScaled.ToString();
-                            txt_Force.Text = Convert.ToInt32(values[1].Value).ToString();
-                            
+                        var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "ana", "Srdy", "Szpd" });
+                        
+                            SharedVariables.EncoderRaw = Convert.ToDouble(values[0].Value);
+                            SharedVariables.LoadcellScaled = Convert.ToDouble(values[1].Value);
+                            SharedVariables.AnaTest = Convert.ToInt16(values[2].Value);
+                            SharedVariables.Servo_Rdy = Convert.ToBoolean(values[3].Value);
+                            SharedVariables.Servo_ZSpd = Convert.ToBoolean(values[4].Value);
                         }
 
                         catch (NullReferenceException)
@@ -190,7 +211,8 @@ namespace TensileTesterSharer
 
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.ToString());
+                            
+                            //MessageBox.Show(ex.ToString());
                         }
 
                         finally
@@ -210,10 +232,24 @@ namespace TensileTesterSharer
 
             else
             {
-                UITimer.Dispose();
+                ReadArduinoTmr.Dispose();
                 MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
             }
+            
+            //StoreValues();
         }
+
+        private void UpdateUItmr_Tick(object sender, EventArgs e)
+        {
+
+            txt_Force.Value = SharedVariables.AnaTest;
+            SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / 300.25));
+            txt_Dist.Value = SharedVariables.EncoderScaled;
+            //txt_Ana.Value = SharedVariables.AnaTest;
+            txt_SR.Text = SharedVariables.Servo_Rdy.ToString();
+            txt_SZ.Text = SharedVariables.Servo_ZSpd.ToString();
+        }
+        
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
         {
@@ -221,29 +257,69 @@ namespace TensileTesterSharer
             Application.Current.Shutdown();
             Close();
         }
-
-        private void txt_SpeedRef_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                ManSpeed = (int)txt_SpeedRef.Value;
-                connection.WriteVariable("SpeedRef", ManSpeed);
-
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
-
-            }
-            
-            
-        }
-
+       
         private void txt_CalFactor_TextChanged(object sender, TextChangedEventArgs e)
         {
             //connection.WriteVariable("calibration_factor", txt_CalFactor.Value);
         }
+        #region Buttons
 
+        private void btn_Up_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (ManUP == false && ManSelect == true && ManDown == false)
+            {
+                SlideUP();
+                btn_Up.Content = "Stop";
+                ManUP = true;
+            }
+            else
+            {
+                SlideUpStop();
+                btn_Up.Content = "Up";
+                ManUP = false;
+            }
+
+        }
+
+        private void btn_Down_Click(object sender, RoutedEventArgs e)
+        {
+            if (ManDown == false && ManSelect == true && ManUP == false)
+            {
+                SlideDown();
+                btn_Down.Content = "Stop";
+                ManDown = true;
+            }
+            else
+            {
+                SlideDownStop();
+                btn_Down.Content = "Down";
+                ManDown = false;
+            }
+
+        }
+
+        private void btn_Man_Click(object sender, RoutedEventArgs e)
+        {
+            if (ManSelect == false)
+            {
+                btn_Man.Content = "Manual";
+                ManSelect = true;
+
+            }
+            else
+            {
+                btn_Man.Content = "Auto";
+                ManSelect = false;
+                SlideUpStop();
+                ManUP = false;
+                btn_Up.Content = "Up";
+                SlideDownStop();
+                btn_Down.Content = "Down";
+                ManDown = false;
+            }
+
+        }
         private void Send_Click(object sender, RoutedEventArgs e)
         {
             int calfactorTemp = (int)txt_CalFactor.Value;
@@ -270,12 +346,94 @@ namespace TensileTesterSharer
 
         private void btnMOE_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void btnReturn_Click(object sender, RoutedEventArgs e)
         {
+            
+        }
+
+
+       
+
+        private void sldManSpd_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ManSpeed = (int)sldManSpd.Value;
+            WriteSpeedRef();
 
         }
+
+        private void sldAutoSpd_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            AutoSpeedTest = (int)sldAutoSpd.Value;
+            WriteSpeedRef();
+        }
+
+        private void btnAutoStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (Autostart == false)
+            {
+                btnAutoStart.Content = "Stop";
+                btnAutoStart.Background = new SolidColorBrush(Colors.Red);
+                Autostart = true;
+
+            }
+            else
+            {
+                btnAutoStart.Content = "Start";
+                btnAutoStart.Background = new SolidColorBrush(Colors.Green);
+                Autostart = false;
+
+            }
+            #endregion
+        }
+        private void WriteSpeedRef()
+        {
+            int SpeedRef;
+
+            if (ManSelect == true)
+            {
+                SpeedRef = ManSpeed * 25;
+            }
+            else
+            {
+                SpeedRef = AutoSpeedTest * 25;
+            }
+
+                try
+                {
+                   
+                    connection.WriteVariable("SpeedRef", SpeedRef * 25);
+
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
+
+                }
+            
+        }
+
+        private void SlideUP()
+        {
+            var Up = connection.Call("SlideUp");
+        }
+
+        private void SlideUpStop()
+        {
+            var Up = connection.Call("SlideUpStop");
+        }
+
+        private void SlideDown()
+        {
+            var Down = connection.Call("SlideDown");
+        }
+
+        private void SlideDownStop()
+        {
+            var Down = connection.Call("SlideDownStop");
+        }
+
     }
 }

@@ -8,46 +8,54 @@
 #include <Sharer.h>
 
 //Define Loadcell Pins
-#define DOUT  21
-#define CLK  4
+#define DOUT  20
+#define CLK  21
 HX711 Loadcell;
 float calibration_factor = -26500;
 float Loadcell_Mass;
 //Servo Speed
 int SpeedRef = 0;
+//Encoder Variables
+volatile long enctemp, encoder = 0;
+//Share AI0 for Testing
+int ana = 0;
+//Servo Ready
+bool Srdy;
+//Servo Zero Speed
+bool Szpd;
 
 
 // Move Slide Up 
 void SlideUp(void) {
 	
-	//digitalWrite(8, true);
-	analogWrite(8, 255);
+	digitalWrite(8, false);
+	//analogWrite(8, 255);
 }
 
 // Move Slide Up Stop 
 void SlideUpStop(void) {
-	digitalWrite(8, false);
+	digitalWrite(8, true);
 }
 
 // Move Slide Down 
 void SlideDown(void) {
-	digitalWrite(9, true);
-	digitalWrite(8, true);
-}
-
-// Move Slide Down Stop 
-void SlideDownStop(void) {
 	digitalWrite(9, false);
 	digitalWrite(8, false);
 }
 
-//Tare Loadcell
-void Tare(void) {
-	Loadcell.tare(); //Reset the scale to 0
+// Move Slide Down Stop 
+void SlideDownStop(void) {
+	digitalWrite(9, true);
+	digitalWrite(8, true);
 }
 
-volatile unsigned long temp, counter = 0; //This variable will increase or decrease depending on the rotation of encoder
-// Init Sharer and declare your function to share
+//Tare Loadcell
+void Tare(void) {
+Loadcell.tare(); //Reset the scale to 0
+}
+
+
+
 void setup() {
 	//Servo Pin Setup
 	//Enable and Up
@@ -56,6 +64,13 @@ void setup() {
 	pinMode(9, OUTPUT);
 	//Servo Speed Reference
 	pinMode(6, OUTPUT);
+	//Switch Both Realys On
+	digitalWrite(9, true);
+	digitalWrite(8, true);
+
+	//Set Servo Status Pins
+	pinMode(10, INPUT_PULLUP); 
+	pinMode(11, INPUT_PULLUP);
 
 	//Encoder Setup
 	pinMode(2, INPUT_PULLUP); // internal pullup input pin 2 
@@ -89,31 +104,37 @@ void setup() {
 	Sharer_ShareVoid(Tare);
 
 	// Share variables for read/write from desktop application
-	Sharer_ShareVariable(long, counter);
+	Sharer_ShareVariable(long, encoder);
 	Sharer_ShareVariable(int, SpeedRef);
-	//Sharer_ShareVariable(long, zero_factor);
+	Sharer_ShareVariable(long, zero_factor);
 	Sharer_ShareVariable(int, calibration_factor);
 	Sharer_ShareVariable(float, Loadcell_Mass);
+	Sharer_ShareVariable(int, ana);
+	Sharer_ShareVariable(bool, Srdy);
+	Sharer_ShareVariable(bool, Szpd);
 }
 
 // Run Sharer engine in the main Loop
 void loop() {
 	Sharer.run();
 
-	// If data available, just write back them
-	int val = Sharer.read();
-	if (val > 0) {
-		Sharer.write(val);
-	}
-
 	//Write Servo Speed Reference
 	analogWrite(6, SpeedRef);
 
+	//Read Analog Input, Pot for testing
+	ana = analogRead(0);
+
+	//Read Servo Ready
+	Srdy = digitalRead(10);
+
+	//Read Servo Zero Speed
+	Szpd = digitalRead(11);
+
 	//Encoder
 	// Send the value of counter
-	if (counter != temp) {
-		//Serial.println (counter);
-		temp = counter;
+	if (encoder != enctemp) {
+	//	//Serial.println (counter);
+		enctemp = encoder;
 	}
 	//End Encoder
 
@@ -130,10 +151,10 @@ void ai0() {
 	// ai0 is activated if DigitalPin nr 2 is going from LOW to HIGH
 	// Check pin 3 to determine the direction
 	if (digitalRead(3) == LOW) {
-		counter++;
+		encoder++;
 	}
 	else {
-		counter--;
+		encoder--;
 	}
 }
 
@@ -141,9 +162,9 @@ void ai1() {
 	// ai0 is activated if DigitalPin nr 3 is going from LOW to HIGH
 	// Check with pin 2 to determine the direction
 	if (digitalRead(2) == LOW) {
-		counter--;
+		encoder--;
 	}
 	else {
-		counter++;
+		encoder++;
 	}
 }
