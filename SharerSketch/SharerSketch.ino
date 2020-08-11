@@ -95,7 +95,7 @@ void setup() {
 	
 	long zero_factor = Loadcell.read_average(); //Get a baseline reading
 
-	Sharer.init(115200); // Init Serial communication with 115200 bauds
+	Sharer.init(38400); // Init Serial communication with 115200 bauds
 
 	// Share the built-in analogRead function
 	Sharer_ShareFunction(int, analogRead, uint8_t, pin);

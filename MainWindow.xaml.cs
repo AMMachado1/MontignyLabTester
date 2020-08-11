@@ -60,34 +60,49 @@ namespace TensileTesterSharer
 
         public void AddData()
         {
-            DateTime date = new DateTime(2009, 1, 1);
-            date = date.Add(TimeSpan.FromSeconds(1));
-            double force = SharedVariables.LoadcellScaled;
-            double enc = SharedVariables.EncoderScaled;
-            double ana = SharedVariables.AnaTest;
+            if (SharedVariables.ResetChart == true)
+            {
+                DateTime date = new DateTime(2009, 1, 1);
+                double force = 0;
+                double enc = 0;
+                double ana = 0;
 
-            DynamicData.Add(new Data(date, force, enc, ana));
-            
+                DynamicData.Add(new Data(date, force, enc, ana));
+                SharedVariables.ResetChart = false;
+            }
+            else
+            {
+                DateTime date = new DateTime(2009, 1, 1);
+                date = date.Add(TimeSpan.FromSeconds(1));
+                double force = SharedVariables.LoadcellScaled;
+                double enc = SharedVariables.EncoderScaled;
+                double ana = SharedVariables.AnaTest;
+
+                DynamicData.Add(new Data(date, force, enc, ana));
+            }
                 
          }
         
         public ObservableCollection<Data> ZeroData()
         {
-            ObservableCollection<Data> datas = new ObservableCollection<Data>();
-
-            DateTime date = new DateTime(2009, 1, 1);
-            double force = 0;
-            double enc = 0;
-            double ana = 0;
+            
+                ObservableCollection<Data> datas = new ObservableCollection<Data>();
            
+                DateTime date = new DateTime(2009, 1, 1);
+                double force = 0;
+                double enc = 0;
+                double ana = 0;
+
                 datas.Add(new Data(date, force, enc, ana));
-                               
+               
             return datas;
+                          
+            
         }
         
         private void timer_Tick(object sender, EventArgs e)
         {
-            if(SharedVariables.MOETestStartred == true || SharedVariables.IBTestStartred == true)
+            if (SharedVariables.MOETestStarted == true || SharedVariables.IBTestStarted == true)
             {
                 SharedVariables.ForceSample2 = SharedVariables.ForceSample1;
                 SharedVariables.ForceSample1 = SharedVariables.AnaTest;
@@ -102,9 +117,13 @@ namespace TensileTesterSharer
                 }
                 AddData();
             }
+            else if (SharedVariables.ResetChart == true)
+            {
+                AddData();
+            }
             
         }
-        
+
     }
     
 
@@ -126,11 +145,9 @@ namespace TensileTesterSharer
         public bool IBTest = false;
         public bool MOETest = false;
         private bool ReturnSelected = false;
-        private int isWorking;
-        private System.Threading.Timer ReadArduinoTmr;
         public SharerConnection connection;
         DispatcherTimer UpdateUItmr;
-        
+        DispatcherTimer Arduino;
 
         public MainWindow()
         {
@@ -138,6 +155,8 @@ namespace TensileTesterSharer
 
             SharedVariables.ReturnOffset = Settings.Default.RetOffset;
             SharedVariables.BreakForce = Settings.Default.BrkForce;
+            SharedVariables.EncFac = Settings.Default.EncFac;
+            SharedVariables.LoadFac = Settings.Default.LoadFac;
             sldManSpd.Value = 0;
             sldAutoSpd.Value = 0;
             SharedVariables.TestComplete = false;
@@ -155,7 +174,7 @@ namespace TensileTesterSharer
         {
             try
             {
-                connection = new SharerConnection("COM23", 115200);
+                connection = new SharerConnection("COM23", 38400);
                 //connection = new SharerConnection(cmb_Port.Text, 115200);
                 connection.Connect();
                 connection.RefreshFunctions();
@@ -169,14 +188,14 @@ namespace TensileTesterSharer
 
             if (connection.Connected)
             {
-                ReadArduinoTmr = new System.Threading.Timer(ReadArduino, null, 500, 200);
-                var CalFactorTemp = connection.ReadVariable("calibration_factor");
-                txt_CalFactor.Value = Convert.ToInt32(CalFactorTemp.Value);
-
                 UpdateUItmr = new DispatcherTimer();
+                UpdateUItmr.Interval = new TimeSpan(0, 0, 0, 0, 100);
                 UpdateUItmr.Tick += UpdateUItmr_Tick;
-                UpdateUItmr.Interval = new TimeSpan(0, 0, 0, 0, 200);
                 UpdateUItmr.Start();
+                Arduino = new DispatcherTimer();
+                Arduino.Interval = new TimeSpan(0, 0, 0, 0, 100);
+                Arduino.Tick += Arduino_Tick;
+                Arduino.Start();
 
             }
             else
@@ -186,69 +205,54 @@ namespace TensileTesterSharer
             
         }
 
-        
-        public void ReadArduino(object state)
+        private void Arduino_Tick(object sender, EventArgs e)
         {
+            try
+            {
+                
+                var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "ana", "Srdy", "Szpd" });
+               
+                SharedVariables.EncoderRaw = Convert.ToDouble(values[0].Value);
+                SharedVariables.LoadcellScaled = Convert.ToDouble(values[1].Value);
+                SharedVariables.AnaTest = Convert.ToInt16(values[2].Value);
+                SharedVariables.Servo_Rdy = Convert.ToBoolean(values[3].Value);
+                SharedVariables.Servo_ZSpd = Convert.ToBoolean(values[4].Value);
+                
+            }
+
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Null Ref");
+            }
+
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+            }
+
+            finally
+            {
+                
+            }
            
-
-            if (connection.Connected)
-            {
-
-                if ((Interlocked.Increment(ref isWorking) == 1))
-                {
-                    _ = this.Dispatcher.BeginInvoke((System.Action)(() =>
-                    {
-
-                        try
-                        {
-                        var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "ana", "Srdy", "Szpd" });
-                        
-                            SharedVariables.EncoderRaw = Convert.ToDouble(values[0].Value);
-                            SharedVariables.LoadcellScaled = Convert.ToDouble(values[1].Value);
-                            SharedVariables.AnaTest = Convert.ToInt16(values[2].Value);
-                            SharedVariables.Servo_Rdy = Convert.ToBoolean(values[3].Value);
-                            SharedVariables.Servo_ZSpd = Convert.ToBoolean(values[4].Value);
-                        }
-
-                        catch (NullReferenceException)
-                        {
-                            MessageBox.Show("Null Ref");
-                        }
-
-                        catch (Exception ex)
-                        {
-                            
-                            //MessageBox.Show(ex.ToString());
-                        }
-
-                        finally
-                        {
-                            Interlocked.Decrement(ref isWorking);
-                        }
-                    }));
-
-                }
-
-                else
-                {
-                    Interlocked.Decrement(ref isWorking);
-                }
-
-            }
-
-            else
-            {
-                ReadArduinoTmr.Dispose();
-                MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
-            }
-            
         }
 
-        private void UpdateUItmr_Tick(object sender, EventArgs e)
+       
+
+        public void UpdateUItmr_Tick(object sender, EventArgs e)
         {
 
             txt_Force.Value = SharedVariables.AnaTest;
-            SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / 300.25));
+            if (IBTest == true)
+            {
+                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac)*-1);
+            }
+            else
+            {
+                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac));
+            }
+           
             txt_Dist.Value = SharedVariables.EncoderScaled;
             //txt_Ana.Value = SharedVariables.AnaTest;
             txt_SR.Text = SharedVariables.Servo_Rdy.ToString();
@@ -260,7 +264,7 @@ namespace TensileTesterSharer
             }
             if(ReturnSelected == true && MOETest==true)
             {
-                { 
+                
                 if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
                 {
                     SlideUP();
@@ -268,14 +272,13 @@ namespace TensileTesterSharer
                 else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
                 {
                     SlideUpStop();
-                }
-                   
                     ReturnSelected = false;
+                    btnReturn.IsChecked = false;
                 }
             }
             if (ReturnSelected == true && IBTest == true)
             {
-                {
+                
                     if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
                     {
                         SlideDown();
@@ -283,10 +286,9 @@ namespace TensileTesterSharer
                     else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
                     {
                         SlideDownStop();
+                        ReturnSelected = false;
+                        btnReturn.IsChecked = false;
                     }
-
-                    ReturnSelected = false;
-                }
             }
 
         }
@@ -321,6 +323,7 @@ namespace TensileTesterSharer
                 btn_Up.Content = "Stop";
                 btn_Up.Background = new SolidColorBrush(Colors.Red);
                 ManUP = true;
+                btn_Down.IsChecked = false;
             }
         }
 
@@ -340,6 +343,7 @@ namespace TensileTesterSharer
                 btn_Down.Content = "Stop";
                 btn_Down.Background = new SolidColorBrush(Colors.Red);
                 ManDown = true;
+                btn_Up.IsChecked = false;
             }
         }
 
@@ -369,11 +373,26 @@ namespace TensileTesterSharer
             }
         }
 
-        private void btnReturn_Click(object sender, RoutedEventArgs e)
+        private void btnReturn_Checked(object sender, RoutedEventArgs e)
         {
-            //TestChart.Series.
-            ReturnSelected = true;
+            if (MOETest == true || IBTest == true)
+            {
+                ReturnSelected = true;
+                btnReturn.Background = new SolidColorBrush(Colors.Red);
+            }
+
+            else
+            {
+                MessageBox.Show("Choose Test Return Type");
+            }
+
            
+        }
+
+        private void btnReturn_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ReturnSelected = false;
+            btnReturn.Background = new SolidColorBrush(Colors.Green);
         }
 
         private void sldManSpd_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -415,21 +434,22 @@ namespace TensileTesterSharer
                 btn_Man.IsEnabled = false;
                 btn_Up.IsEnabled = false;
                 btn_Down.IsEnabled = false;
+                btnReturn.IsEnabled = false;
                 SharedVariables.TestComplete = false;
-                SharedVariables.MaxForce = 0;
+                SharedVariables.MaxForce=0;
                 connection.Call("Tare");
                 connection.Call("ZeroEnc");
                 //TestChart.IsEnabled = true;
                 if(MOETest== true)
                 {
-                    SharedVariables.MOETestStartred = true;
-                    SharedVariables.IBTestStartred = false;
+                    SharedVariables.MOETestStarted = true;
+                    SharedVariables.IBTestStarted = false;
                     SlideDown();
                 }
                 else if (IBTest == true)
                 {
-                    SharedVariables.IBTestStartred = true;
-                    SharedVariables.MOETestStartred = false;
+                    SharedVariables.IBTestStarted = true;
+                    SharedVariables.MOETestStarted = false;
                     SlideUP();
                 }
                
@@ -454,14 +474,15 @@ namespace TensileTesterSharer
             btn_Man.IsEnabled = true;
             btn_Up.IsEnabled = true;
             btn_Down.IsEnabled = true;
-            if (SharedVariables.MOETestStartred == true)
+            btnReturn.IsEnabled = true;
+            if (SharedVariables.MOETestStarted == true)
             {
-                SharedVariables.MOETestStartred = false;
+                SharedVariables.MOETestStarted = false;
                 SlideDownStop();
             }
-            else if (SharedVariables.IBTestStartred == true)
+            else if (SharedVariables.IBTestStarted == true)
             {
-                SharedVariables.IBTestStartred = false;
+                SharedVariables.IBTestStarted = false;
                 SlideUpStop();
             }
         }
@@ -471,6 +492,7 @@ namespace TensileTesterSharer
             btnMOE.Background = new SolidColorBrush(Colors.Green);
             IBTest = true;
             btnIB.Background = new SolidColorBrush(Colors.Red);
+            btnMOE.IsChecked = false;
         }
 
         private void btnIB_Unchecked(object sender, RoutedEventArgs e)
@@ -485,12 +507,34 @@ namespace TensileTesterSharer
             btnIB.Background = new SolidColorBrush(Colors.Green);
             MOETest = true;
             btnMOE.Background = new SolidColorBrush(Colors.Red);
+            btnIB.IsChecked = false;
         }
 
         private void btnMOE_Unchecked(object sender, RoutedEventArgs e)
         {
             MOETest = false;
             btnMOE.Background = new SolidColorBrush(Colors.Green);
+        }
+
+        private void TestSeup_Click(object sender, RoutedEventArgs e)
+        {
+            TestSetup testSetup = new TestSetup();
+            SharedVariables sharedVariables = new SharedVariables();
+            bool? Result1 = testSetup.ShowDialog();
+        }
+
+        private void MenuItem_About_Click()
+        {
+
+        }
+
+        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
+        {
+            SlideDownStop();
+            SlideUpStop();
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+            Application.Current.Shutdown();
+            Close();
         }
         #endregion
 
@@ -587,29 +631,15 @@ namespace TensileTesterSharer
             }
 
         }
+
+
+
         #endregion
 
-        private void TestSeup_Click(object sender, RoutedEventArgs e)
+        private void btnTest_Checked(object sender, RoutedEventArgs e)
         {
-            TestSetup testSetup = new TestSetup();
-            SharedVariables sharedVariables = new SharedVariables();
-            bool? Result1 = testSetup.ShowDialog();
+            //SharedVariables.ResetChart = true;
+            //TestChart.PrimaryAxis.rese
         }
-
-        private void MenuItem_About_Click()
-        {
-
-        }
-
-        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
-        {
-            SlideDownStop();
-            SlideUpStop();
-            System.Diagnostics.Process.GetCurrentProcess().Kill();
-            Application.Current.Shutdown();
-            Close();
-        }
-
-
     }
 }

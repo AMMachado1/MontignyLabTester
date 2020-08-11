@@ -77,48 +77,40 @@
             <SfCharts:SfChart x:Name="TestChart" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="3" Margin="2" AreaBorderThickness="1"
                           Background="White">
 
-
+                
                 <SfCharts:SfChart.PrimaryAxis>
-
-                    <SfCharts:CategoryAxis LabelFormat="ss" Visibility="Hidden" 
+                    <SfCharts:NumericalAxis LabelFormat="0"
+                                    Interval="10" Margin="1" 
                                     AxisLineStyle="{StaticResource AxisStyle}" 
-                                    MajorTickLineStyle="{StaticResource AxisStyle}">
+                                    MajorTickLineStyle="{StaticResource AxisStyle}"
+                                    PlotOffset="10">
 
-                    </SfCharts:CategoryAxis>
-
+                        <SfCharts:ChartAxis.Header>
+                            <TextBlock Margin="2" Text="Distance(mm)" FontSize="16" FontFamily="SegoeUI"/>
+                        </SfCharts:ChartAxis.Header>
+                    </SfCharts:NumericalAxis>
                 </SfCharts:SfChart.PrimaryAxis>
 
                 <SfCharts:SfChart.SecondaryAxis>
-                    <SfCharts:NumericalAxis
-                                     Interval="1" Margin="1" 
+                    <SfCharts:NumericalAxis LabelFormat="0"
+                                     Interval="5" Margin="1" 
                                      AxisLineStyle="{StaticResource AxisStyle}"
                                      MajorTickLineStyle="{StaticResource AxisStyle}"
                                      PlotOffset="10">
+                   
                         <SfCharts:ChartAxis.Header>
-                            <TextBlock Margin="2" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
+                            <TextBlock Margin="2" Text="Force(kN)" FontSize="16" FontFamily="SegoeUI"/>
                         </SfCharts:ChartAxis.Header>
 
                     </SfCharts:NumericalAxis>
+                    
                 </SfCharts:SfChart.SecondaryAxis>
+                <SfCharts:SplineSeries Label="Distance" XBindingPath="Enc" YBindingPath="Ana" ItemsSource="{Binding DynamicData}"
+                                       StrokeThickness="2"/>
 
-                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Force" 
-                                        XBindingPath="Date" YBindingPath="Force" 
-                                        LegendIcon="SeriesType" StrokeThickness="2"
-                                        ItemsSource="{Binding DynamicData}"
-                                        
-                                        />
-
-                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Distance" 
-                                        XBindingPath="Date" YBindingPath="Enc" 
-                                        LegendIcon="SeriesType"   StrokeThickness="2"
-                                        ItemsSource="{Binding DynamicData}"/>
-
-                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Analog" 
-                                        XBindingPath="Date" YBindingPath="Ana" 
-                                        LegendIcon="SeriesType"   StrokeThickness="2"
-                                        ItemsSource="{Binding DynamicData}"/>
-
-
+                <SfCharts:SplineSeries Label="Force" XBindingPath="Enc" YBindingPath="Ana" ItemsSource="{Binding DynamicData}"
+                                       StrokeThickness="2"/>
+                
             </SfCharts:SfChart>
         </GroupBox>
 
@@ -187,9 +179,10 @@
                 <Slider x:Name="sldAutoSpd" BorderBrush="White" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
                         Margin="10" VerticalAlignment="Top"
                         Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldAutoSpd_ValueChanged"/>
-                <Button x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Click="btnReturn_Click"/>
+                <ToggleButton x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Checked="btnReturn_Checked" Unchecked="btnReturn_Unchecked"/>
                 <TextBox x:Name="txt_SR" Grid.Column="0" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 <TextBox x:Name="txt_SZ" Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <ToggleButton x:Name="btnTest" Content="Test" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Checked="btnTest_Checked"/>
             </Grid>
         </GroupBox>
 
@@ -203,8 +196,8 @@
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
-                <syncfusion:DoubleTextBox x:Name="txt_Force"
-                           FontWeight="Bold"  Background="White" IsEnabled="True"
+                <syncfusion:DoubleTextBox x:Name="txt_Force" Margin="1"
+                           FontWeight="Bold"  Background="White" IsEnabled="False"
                            BorderThickness="0"
                            />
             </Viewbox>
@@ -220,8 +213,8 @@
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
-                <syncfusion:DoubleTextBox x:Name="txt_Dist"
-                           FontWeight="Bold"  Background="White" IsEnabled="True"
+                <syncfusion:DoubleTextBox x:Name="txt_Dist" Margin="1"
+                           FontWeight="Bold"  Background="White" IsEnabled="False"
                            BorderThickness="0"/>
             </Viewbox>
         </GroupBox>
@@ -235,8 +228,8 @@
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
-                <syncfusion:DoubleTextBox x:Name="txtMaxForce"
-                    FontWeight="Bold"  Background="White" IsEnabled="True"
+                <syncfusion:DoubleTextBox x:Name="txtMaxForce" Margin="1"
+                    FontWeight="Bold"  Background="White" IsEnabled="False"
                     BorderThickness="0"/>
             </Viewbox>
         </GroupBox>

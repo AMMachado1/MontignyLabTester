@@ -21,8 +21,11 @@ namespace TensileTesterSharer
         public static double LoadTest;
         public static bool Servo_Rdy;
         public static bool Servo_ZSpd;
-        public static bool MOETestStartred;
-        public static bool IBTestStartred;
+        public static bool MOETestStarted;
+        public static bool IBTestStarted;
         public static bool TestComplete;
+        public static double EncFac;
+        public static float LoadFac;
+        public static bool ResetChart;
     }
 }
