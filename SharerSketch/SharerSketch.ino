@@ -55,6 +55,13 @@ Loadcell.tare(); //Reset the scale to 0
 }
 
 
+//Zero Encoder
+void ZeroEnc(void) {
+	encoder = 0;
+}
+
+
+
 
 void setup() {
 	//Servo Pin Setup
@@ -102,6 +109,7 @@ void setup() {
 	Sharer_ShareVoid(SlideDown);
 	Sharer_ShareVoid(SlideDownStop);
 	Sharer_ShareVoid(Tare);
+	Sharer_ShareVoid(ZeroEnc);
 
 	// Share variables for read/write from desktop application
 	Sharer_ShareVariable(long, encoder);
@@ -117,7 +125,7 @@ void setup() {
 // Run Sharer engine in the main Loop
 void loop() {
 	Sharer.run();
-
+	
 	//Write Servo Speed Reference
 	analogWrite(6, SpeedRef);
 

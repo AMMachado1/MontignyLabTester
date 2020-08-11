@@ -9,13 +9,11 @@
         x:Class="TensileTesterSharer.MainWindow"
         mc:Ignorable="d"
         
-        Title="MainWindow" Height="800" Width="1200" Background="CornflowerBlue"  WindowState="Normal">
+        Title="Tensile Tester" Height="800" Width="1200" Background="CornflowerBlue"  WindowState="Normal">
 
     <Window.DataContext>
         <local:DataGenerator/>
     </Window.DataContext>
-
-
 
     <Grid>
         <Grid.Resources>
@@ -42,54 +40,80 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
 
-
         </Grid.RowDefinitions>
+
+        <Menu Width="Auto" Height="20" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Background="LightGray">
+
+
+            <!-- File Menu -->
+            <MenuItem Header="File">
+
+                <MenuItem Header="Exit" Click="MenuItem_Close_Click"/>
+
+            </MenuItem>
+
+            <MenuItem Header="Setup">
+                <MenuItem Header="Test Setup" Click="TestSeup_Click"/>
+
+                <MenuItem Header="Camera"/>
+
+            </MenuItem>
+            <!-- About Menu -->
+            <MenuItem Header="Help">
+                <!--
+                <MenuItem Header="About" Click="MenuItem_About_Click"/>
+                -->
+            </MenuItem>
+        </Menu>
+
+        <Image x:Name="MontignyLogo" Grid.Row="1" Grid.Column="2" Source="Images/MontignyLogo.PNG"/>
+
         <GroupBox x:Name="Trend" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="3" Margin="5" >
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Trend"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
-                  <SfCharts:SfChart x:Name="TestChart" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="3" Margin="2" AreaBorderThickness="1"
+            <SfCharts:SfChart x:Name="TestChart" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="3" Margin="2" AreaBorderThickness="1"
                           Background="White">
-            
 
-            <SfCharts:SfChart.PrimaryAxis>
-               
-                <SfCharts:CategoryAxis LabelFormat="ss" Visibility="Hidden" 
+
+                <SfCharts:SfChart.PrimaryAxis>
+
+                    <SfCharts:CategoryAxis LabelFormat="ss" Visibility="Hidden" 
                                     AxisLineStyle="{StaticResource AxisStyle}" 
                                     MajorTickLineStyle="{StaticResource AxisStyle}">
-            
-            </SfCharts:CategoryAxis>
 
-            </SfCharts:SfChart.PrimaryAxis>
+                    </SfCharts:CategoryAxis>
 
-            <SfCharts:SfChart.SecondaryAxis>
-                <SfCharts:NumericalAxis
+                </SfCharts:SfChart.PrimaryAxis>
+
+                <SfCharts:SfChart.SecondaryAxis>
+                    <SfCharts:NumericalAxis
                                      Interval="1" Margin="1" 
                                      AxisLineStyle="{StaticResource AxisStyle}"
                                      MajorTickLineStyle="{StaticResource AxisStyle}"
                                      PlotOffset="10">
-                    <SfCharts:ChartAxis.Header>
-                        <TextBlock Margin="2" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
-                    </SfCharts:ChartAxis.Header>
+                        <SfCharts:ChartAxis.Header>
+                            <TextBlock Margin="2" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
+                        </SfCharts:ChartAxis.Header>
 
-                </SfCharts:NumericalAxis>
-            </SfCharts:SfChart.SecondaryAxis>
+                    </SfCharts:NumericalAxis>
+                </SfCharts:SfChart.SecondaryAxis>
 
-            <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Force" 
+                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Force" 
                                         XBindingPath="Date" YBindingPath="Force" 
                                         LegendIcon="SeriesType" StrokeThickness="2"
                                         ItemsSource="{Binding DynamicData}"
                                         
                                         />
 
-            <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Distance" 
+                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Distance" 
                                         XBindingPath="Date" YBindingPath="Enc" 
                                         LegendIcon="SeriesType"   StrokeThickness="2"
                                         ItemsSource="{Binding DynamicData}"/>
 
-            <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Analog" 
+                <SfCharts:FastLineBitmapSeries EnableAntiAliasing="True" Label="Analog" 
                                         XBindingPath="Date" YBindingPath="Ana" 
                                         LegendIcon="SeriesType"   StrokeThickness="2"
                                         ItemsSource="{Binding DynamicData}"/>
@@ -97,7 +121,7 @@
 
             </SfCharts:SfChart>
         </GroupBox>
-        
+
         <GroupBox x:Name="Manual_Controls" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" Margin="10,10,10,10" BorderBrush="White" BorderThickness="1">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
@@ -121,9 +145,10 @@
                 </Grid.RowDefinitions>
                 <Button Margin="2,2,2,1" Content="Connect" x:Name="btn_connect" Grid.Column="0" Grid.Row="0" Click="btn_connect_Click"/>
                 <ComboBox x:Name="cmb_Port" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Width="Auto"/>
-                <Button x:Name="btn_Man" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" HorizontalAlignment="Stretch" Background="Aqua" Click="btn_Man_Click" Content="Auto" FontSize="22" FontWeight="Bold"/>
-                <Button x:Name="btn_Up" Grid.Row="2" Grid.Column="0" Margin="10,10,10,10" Click="btn_Up_Click" Content="Up" FontSize="22" FontWeight="Bold"/>
-                <Button x:Name="btn_Down" Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" Click="btn_Down_Click" Content="Down" FontSize="22" FontWeight="Bold"/>
+                <ToggleButton x:Name="btn_Man" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" HorizontalAlignment="Stretch" Background="Red"
+                              IsChecked="True" Checked="btn_Man_Checked" Unchecked="btn_Man_Unchecked" Content="Auto" FontSize="22" FontWeight="Bold"/>
+                <ToggleButton x:Name="btn_Up" Grid.Row="2" Grid.Column="0" Margin="10,10,10,10" IsChecked="False" Checked="btn_Up_Checked" Unchecked="btn_Up_Unchecked" Content="Up" FontSize="22" FontWeight="Bold"/>
+                <ToggleButton x:Name="btn_Down" Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" IsChecked="False" Checked="btn_Down_Checked" Unchecked="btn_Down_Unchecked" Content="Down" FontSize="22" FontWeight="Bold"/>
                 <Slider x:Name="sldManSpd" BorderBrush="White" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                         HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top"  Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldManSpd_ValueChanged"/>
                 <syncfusion:IntegerTextBox x:Name="txt_CalFactor" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="10,10,10,10" MinWidth="180" NumberGroupSeparator="," Grid.Row="4" VerticalAlignment="Top" TextChanged="txt_CalFactor_TextChanged"/>
@@ -151,17 +176,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
 
                 </Grid.RowDefinitions>
 
-                <Button x:Name="btnIB" Content="IB Test" Grid.Row="0" Grid.Column="0" Margin="10,10,10,10" Click="btnIB_Click"/>
-                <Button x:Name="btnMOE" Content="MOE Test" Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Click="btnMOE_Click"/>
-                <Button x:Name="btnAutoStart" Content="Start" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
-                        Click="btnAutoStart_Click" Background="Green" FontSize="22"/>
+                <ToggleButton x:Name="btnIB" Content="IB" Grid.Row="0" Grid.Column="0" Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False" Checked="btnIB_Checked" Unchecked="btnIB_Unchecked"/>
+                <ToggleButton x:Name="btnMOE" Content="MOE" Grid.Row="0" Grid.Column="1" Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False" Checked="btnMOE_Checked" Unchecked="btnMOE_Unchecked"/>
+                <ToggleButton x:Name="btnAutoStart" Content="Start" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
+                        IsChecked="False" Checked="btnAutoStart_Checked" Unchecked="btnAutoStart_Unchecked" Background="Green" FontSize="22" FontWeight="Bold"/>
                 <Slider x:Name="sldAutoSpd" BorderBrush="White" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
                         Margin="10" VerticalAlignment="Top"
                         Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldAutoSpd_ValueChanged"/>
-                <Button x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,10,10,10" Click="btnReturn_Click"/>
+                <Button x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Click="btnReturn_Click"/>
                 <TextBox x:Name="txt_SR" Grid.Column="0" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 <TextBox x:Name="txt_SZ" Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
             </Grid>
@@ -170,10 +196,10 @@
 
 
 
-        <GroupBox Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"  BorderBrush="White" BorderThickness="1">
+        <GroupBox Grid.Column="0" Grid.Row="1" Margin="5,0,5,0"  BorderBrush="White" BorderThickness="1">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Force"/></TextBlock>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Current Force"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
@@ -184,7 +210,7 @@
             </Viewbox>
         </GroupBox>
 
-        <GroupBox Grid.Column="1" Grid.Row="1" Margin="10,10,10,10"  BorderBrush="White" BorderThickness="1">
+        <GroupBox Grid.Column="3" Grid.Row="1" Margin="5,0,5,0"  BorderBrush="White" BorderThickness="1">
             <GroupBox.BindingGroup>
                 <BindingGroup/>
             </GroupBox.BindingGroup>
@@ -199,25 +225,21 @@
                            BorderThickness="0"/>
             </Viewbox>
         </GroupBox>
-<!--
-        <GroupBox Grid.Column="3" Grid.Row="1" Margin="10,10,10,10"  BorderBrush="White" BorderThickness="1">
+        <GroupBox Grid.Column="1" Grid.Row="1" Margin="5,0,5,0"  BorderBrush="White" BorderThickness="1">
             <GroupBox.BindingGroup>
                 <BindingGroup/>
             </GroupBox.BindingGroup>
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Analog"/></TextBlock>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Maximum Force"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
-                <syncfusion:DoubleTextBox x:Name="txt_Ana"
-                           FontWeight="Bold"  Background="White" IsEnabled="True"
-                           BorderThickness="0" />
+                <syncfusion:DoubleTextBox x:Name="txtMaxForce"
+                    FontWeight="Bold"  Background="White" IsEnabled="True"
+                    BorderThickness="0"/>
             </Viewbox>
         </GroupBox>
-        -->
-        
-                <Image x:Name="MontignyLogo" Source="MontignyLogo.PNG" Grid.Row="1" Grid.Column="2"/>
-            
+
     </Grid>
 </Window>

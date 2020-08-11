@@ -1,0 +1,36 @@
+﻿<Window x:Class="TensileTesterSharer.Properties.TestSetup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        xmlns:local="clr-namespace:TensileTesterSharer.Properties"
+        mc:Ignorable="d"
+        Title="Test Setup" Height="450" Width="800">
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <Label Name="lblSeroOffset" Grid.Row="0" Grid.Column="0" Content="Return Offset:" Margin="10" FontSize="22" FontWeight="Bold"/>
+        <syncfusion:DoubleTextBox Name="txtReturnOffset"  Margin="10" Grid.Column="1"  Grid.Row="0" FontSize="22" FontWeight="Bold"/>
+        <Label Name ="lblTestBreakForce" Grid.Row="1" Grid.Column="0" Content="Test Break Force:"  Margin="10" FontSize="22" FontWeight="Bold"/>
+        <Button Name="btnClose" Grid.Row="5" Grid.Column="1" Content="Close" Margin="10" FontSize="20" FontWeight="Bold" Click="btnClose_Click"/>
+        <syncfusion:DoubleTextBox Name="txtTestBrkForce"  Margin="10" Grid.Column="1"  Grid.Row="1" FontSize="22" FontWeight="Bold"/>
+
+    </Grid>
+</Window>

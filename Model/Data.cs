@@ -8,7 +8,7 @@ namespace TensileTesterSharer
 {
     public class Data
     {
-        public Data(DateTime date, double force, double enc, int ana)
+        public Data(DateTime date, double force, double enc, double ana)
         {
             Date = date;
             Force = force;
@@ -35,7 +35,7 @@ namespace TensileTesterSharer
             set;
         }
 
-        public int Ana
+        public double Ana
         {
             get;
             set;
