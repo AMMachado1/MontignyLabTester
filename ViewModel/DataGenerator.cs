@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 
-namespace TensileTesterSharer.ViewModel
-{/*
+namespace TensileTesterSharer
+{
     public class DataGenerator
     {
-
-
-
         public int DataCount = 50000;
         private int RateOfData = 5;
         private ObservableCollection<Data> Data;
@@ -29,63 +26,86 @@ namespace TensileTesterSharer.ViewModel
             randomNumber = new Random();
             DynamicData = new ObservableCollection<Data>();
             Data = new ObservableCollection<Data>();
-            Data = GenerateData();
+            Data = ZeroData();
+            RunTmr();
+        }
 
-            // LoadData();
-
+        public void RunTmr()
+        {
             timer = new DispatcherTimer();
             timer.Tick += timer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 10);
             timer.Start();
-
         }
 
 
         public void AddData()
         {
-            DateTime date = new DateTime(2009, 1, 1);
-            date = date.Add(TimeSpan.FromSeconds(1));
-            double force = SharedVariables.LoadcellScaled;
-            double enc = SharedVariables.EncoderScaled;
-            int ana = SharedVariables.AnaTest;
+            if (SharedVariables.ResetChart == true)
+            {
+                DateTime date = new DateTime(2009, 1, 1);
+                double force = 0;
+                double enc = 0;
+                double ana = 0;
 
-            DynamicData.Add(new Data(date, force, enc, ana));
+                DynamicData.Add(new Data(date, force, enc, ana));
+                SharedVariables.ResetChart = false;
+            }
+            else
+            {
+                DateTime date = new DateTime(2009, 1, 1);
+                date = date.Add(TimeSpan.FromSeconds(1));
+                double force = SharedVariables.LoadcellScaled;
+                double enc = SharedVariables.EncoderScaled;
+                double ana = SharedVariables.AnaTest;
 
+                DynamicData.Add(new Data(date, force, enc, ana));
+            }
 
         }
 
-        public ObservableCollection<Data> GenerateData()
+        public ObservableCollection<Data> ZeroData()
         {
+
             ObservableCollection<Data> datas = new ObservableCollection<Data>();
 
             DateTime date = new DateTime(2009, 1, 1);
-            double force = SharedVariables.LoadcellScaled;
-            double enc = SharedVariables.EncoderScaled;
-            int ana = SharedVariables.AnaTest;
+            double force = 0;
+            double enc = 0;
+            double ana = 0;
 
-            for (int i = 0; i < this.DataCount; i++)
-            {
-                datas.Add(new Data(date, force, enc, ana));
-                date = date.Add(TimeSpan.FromSeconds(1));
-
-                force = SharedVariables.LoadcellScaled;
-                enc = SharedVariables.EncoderScaled;
-                ana = SharedVariables.AnaTest;
-
-            }
+            datas.Add(new Data(date, force, enc, ana));
 
             return datas;
+
+
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / 300.25));
-            //txt_Dist.Value = SharedVariables.EncoderScaled;
-            AddData();
-            //GenerateData();
+            if (SharedVariables.MOETestStarted == true || SharedVariables.IBTestStarted == true)
+            {
+                SharedVariables.ForceSample2 = SharedVariables.ForceSample1;
+                SharedVariables.ForceSample1 = SharedVariables.AnaTest;
+                if ((SharedVariables.ForceSample2 - SharedVariables.ForceSample1) > SharedVariables.BreakForce)
+                {
+                    SharedVariables.TestComplete = true;
+
+                }
+                if (SharedVariables.AnaTest > SharedVariables.MaxForce)
+                {
+                    SharedVariables.MaxForce = SharedVariables.AnaTest;
+                }
+                AddData();
+            }
+            else if (SharedVariables.ResetChart == true)
+            {
+                AddData();
+            }
+
         }
 
     }
-    */
 }
+
 

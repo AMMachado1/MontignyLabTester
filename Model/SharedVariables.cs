@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace TensileTesterSharer
 {
@@ -27,5 +28,17 @@ namespace TensileTesterSharer
         public static double EncFac;
         public static float LoadFac;
         public static bool ResetChart;
+        public static Image img1T;
+        public static Image img2B;
+        public static Image img3T;
+        public static Image img4B;
+        public static Image img5T;
+        public static Image img6B;
+        public static Image img7T;
+        public static Image img8B;
+        public static double Length;
+        public static double Width;
+        public static double Thickness;
+        public static double Density;
     }
 }
