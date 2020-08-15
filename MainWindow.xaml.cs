@@ -1,4 +1,5 @@
 ﻿using Sharer;
+using Syncfusion.UI.Xaml.Charts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -337,8 +338,15 @@ namespace TensileTesterSharer
                 btnReturn.IsEnabled = false;
                 SharedVariables.TestComplete = false;
                 SharedVariables.MaxForce=0;
-                TestChart.Series.Add(chartForce);
-                //chartForce.ItemsSource = get
+                var force = new FastLineSeries()
+                {
+                    //ItemsSource = GetRefreshData();
+                    XBindingPath = "Enc",
+                    YBindingPath = "Ana"
+                };
+
+                TestChart.Series.Add(force);
+                
                 connection.Call("Tare");
                 connection.Call("ZeroEnc");
                 //TestChart.IsEnabled = true;

@@ -4,13 +4,13 @@
  Author:	Alberto Machado
 */
 
-#include <HX711.h>
+//#include <HX711.h>
 #include <Sharer.h>
 
 //Define Loadcell Pins
-#define DOUT  20
-#define CLK  21
-HX711 Loadcell;
+//#define DOUT  20
+//#define CLK  21
+//HX711 Loadcell;
 float calibration_factor = -26500;
 float Loadcell_Mass;
 //Servo Speed
@@ -51,7 +51,7 @@ void SlideDownStop(void) {
 
 //Tare Loadcell
 void Tare(void) {
-Loadcell.tare(); //Reset the scale to 0
+//Loadcell.tare(); //Reset the scale to 0
 }
 
 
@@ -64,7 +64,7 @@ void ZeroEnc(void) {
 
 
 void setup() {
-	//Servo Pin Setup
+	
 	//Enable and Up
 	pinMode(8, OUTPUT);
 	//Down
@@ -90,10 +90,10 @@ void setup() {
 	//End Encoder Setup
 
 	// Start Scale
-	Loadcell.begin(DOUT, CLK);
+	//Loadcell.begin(DOUT, CLK);
 	
 	
-	long zero_factor = Loadcell.read_average(); //Get a baseline reading
+	//long zero_factor = Loadcell.read_average(); //Get a baseline reading
 
 	Sharer.init(38400); // Init Serial communication with 115200 bauds
 
@@ -114,7 +114,7 @@ void setup() {
 	// Share variables for read/write from desktop application
 	Sharer_ShareVariable(long, encoder);
 	Sharer_ShareVariable(int, SpeedRef);
-	Sharer_ShareVariable(long, zero_factor);
+	//Sharer_ShareVariable(long, zero_factor);
 	Sharer_ShareVariable(int, calibration_factor);
 	Sharer_ShareVariable(float, Loadcell_Mass);
 	Sharer_ShareVariable(int, ana);
@@ -148,8 +148,8 @@ void loop() {
 
 	//Read Loadcell
 	//Loadcell_Mass = (Loadcell.get_units(), 1);
-	Loadcell.set_scale(calibration_factor);
-	Loadcell_Mass = Loadcell.get_units();
+	//Loadcell.set_scale(calibration_factor);
+	//Loadcell_Mass = Loadcell.get_units();
 
 	
 }
