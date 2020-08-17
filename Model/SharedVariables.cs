@@ -25,7 +25,7 @@ namespace TensileTesterSharer
         public static bool MOETestStarted;
         public static bool IBTestStarted;
         public static bool TestComplete;
-        public static double EncFac;
+        public static float EncFac;
         public static float LoadFac;
         public static bool ResetChart;
         public static Image img1T;

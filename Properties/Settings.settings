@@ -8,7 +8,7 @@
     <Setting Name="RetOffset" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="EncFac" Type="System.Double" Scope="User">
+    <Setting Name="EncFac" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="LoadFac" Type="System.Single" Scope="User">

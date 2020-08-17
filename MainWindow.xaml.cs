@@ -21,20 +21,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using TensileTesterSharer.Properties;
-//using TensileTesterSharer.ViewModel;
-
-
+using SUT.PrintEngine.Utils;
+  
 
 namespace TensileTesterSharer
 {
-  
+
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public float LoadcellScaled = 0;
+        public float LoadcellScaled;
         public int ManSpeed = 0;
         public int AutoSpeedTest = 0;
         public int AutoSpeedApproach = 0;
@@ -46,14 +45,18 @@ namespace TensileTesterSharer
         public bool IBTest = false;
         public bool MOETest = false;
         private bool ReturnSelected = false;
+        public bool exists = false;
         public SharerConnection connection;
         DispatcherTimer UpdateUItmr;
         DispatcherTimer Arduino;
 
+       // public ObservableCollection<Data> DynamicData { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-
+           // this.DynamicData = new ObservableCollection<Data>();
+           // DataContext = this.DynamicData;
             SharedVariables.ReturnOffset = Settings.Default.RetOffset;
             SharedVariables.BreakForce = Settings.Default.BrkForce;
             SharedVariables.EncFac = Settings.Default.EncFac;
@@ -66,9 +69,9 @@ namespace TensileTesterSharer
             {
                 cmb_Port.Items.Add(comport);
             }
-           
+
             connect();
-           
+
         }
 
         public void connect()
@@ -83,9 +86,9 @@ namespace TensileTesterSharer
             catch (Exception)
             {
                 MessageBox.Show("Please Check Connection!!");
-                
+
             }
-            
+
 
             if (connection.Connected)
             {
@@ -97,28 +100,31 @@ namespace TensileTesterSharer
                 Arduino.Interval = new TimeSpan(0, 0, 0, 0, 100);
                 Arduino.Tick += Arduino_Tick;
                 Arduino.Start();
+                float calFac = SharedVariables.LoadFac;
+                connection.WriteVariable("calibration_factor", calFac);
+                //connection.Call("Scale");
 
             }
             else
             {
                 MessageBox.Show("Cannot Connect, Please check Cabling and Retry");
             }
-            
+
         }
 
         private void Arduino_Tick(object sender, EventArgs e)
         {
             try
             {
-                
+
                 var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "ana", "Srdy", "Szpd" });
-               
+
                 SharedVariables.EncoderRaw = Convert.ToDouble(values[0].Value);
                 SharedVariables.LoadcellScaled = Convert.ToDouble(values[1].Value);
                 SharedVariables.AnaTest = Convert.ToInt16(values[2].Value);
                 SharedVariables.Servo_Rdy = Convert.ToBoolean(values[3].Value);
                 SharedVariables.Servo_ZSpd = Convert.ToBoolean(values[4].Value);
-                
+
             }
 
             catch (NullReferenceException)
@@ -134,38 +140,38 @@ namespace TensileTesterSharer
 
             finally
             {
-                
+
             }
-           
+
         }
 
-       
+
 
         public void UpdateUItmr_Tick(object sender, EventArgs e)
         {
-
-            txt_Force.Value = SharedVariables.AnaTest;
             if (IBTest == true)
             {
-                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac)*-1);
+                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac) * -1);
             }
             else
             {
                 SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac));
             }
-           
+
+            //GetRefreshData();
+            txt_Force.Value = SharedVariables.AnaTest;
             txt_Dist.Value = SharedVariables.EncoderScaled;
             //txt_Ana.Value = SharedVariables.AnaTest;
             txt_SR.Text = SharedVariables.Servo_Rdy.ToString();
             txt_SZ.Text = SharedVariables.Servo_ZSpd.ToString();
             txtMaxForce.Value = SharedVariables.MaxForce;
-            if(SharedVariables.TestComplete == true)
+            if (SharedVariables.TestComplete == true)
             {
                 TestComplete();
             }
-            if(ReturnSelected == true && MOETest==true)
+            if (ReturnSelected == true && MOETest == true)
             {
-                
+
                 if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
                 {
                     SlideUP();
@@ -179,22 +185,39 @@ namespace TensileTesterSharer
             }
             if (ReturnSelected == true && IBTest == true)
             {
-                
-                    if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
-                    {
-                        SlideDown();
-                    }
-                    else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
-                    {
-                        SlideDownStop();
-                        ReturnSelected = false;
-                        btnReturn.IsChecked = false;
-                    }
+
+                if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
+                {
+                    SlideDown();
+                }
+                else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
+                {
+                    SlideDownStop();
+                    ReturnSelected = false;
+                    btnReturn.IsChecked = false;
+                }
             }
 
         }
-                
-        #region Buttons
+
+        public void Chart()
+        {
+            if (TestChart.Series.Count > 0)
+            {
+                TestChart.Series.Clear();
+
+            }
+
+            FastLineSeries fastline = new FastLineSeries();
+            fastline.ItemsSource = (new DataGenerator()).DynamicData;
+            fastline.XBindingPath = "Enc";
+            fastline.YBindingPath = "Ana";
+            fastline.StrokeThickness = 2;
+            TestChart.Series.Add(fastline);            
+            
+        }
+    
+           #region Buttons
 
         private void btn_Man_Checked(object sender, RoutedEventArgs e)
         {
@@ -255,15 +278,29 @@ namespace TensileTesterSharer
             btn_Down.Background = new SolidColorBrush(Colors.Green);
             ManDown = false;
         }
-        private void Send_Click(object sender, RoutedEventArgs e)
+
+        private void btnCal_Click(object sender, RoutedEventArgs e)
         {
-            int calfactorTemp = (int)txt_CalFactor.Value;
-            connection.WriteVariable("calibration_factor", calfactorTemp);
+            int calWeight = (int)txt_CalWeight.Value;
+            //connection.WriteVariable("calibration_factor", calfactorTemp);
+            connection.WriteVariable("Cal_Weight", calWeight);
+            connection.Call("Calibrate");
+        }
+        private void btnScale_Click(object sender, RoutedEventArgs e)
+        {
+            float calFac = SharedVariables.LoadFac;
+            connection.WriteVariable("calibration_factor", calFac);
+            connection.Call("Scale");
         }
 
-        private void Tare_Click(object sender, RoutedEventArgs e)
+        private void btnTare_Click(object sender, RoutedEventArgs e)
         {
             connection.Call("Tare");
+        }
+
+        private void btnZero_Click(object sender, RoutedEventArgs e)
+        {
+            connection.Call("ZeroEnc");
         }
 
         private void btn_connect_Click(object sender, RoutedEventArgs e)
@@ -286,8 +323,6 @@ namespace TensileTesterSharer
             {
                 MessageBox.Show("Choose Test Return Type");
             }
-
-           
         }
 
         private void btnReturn_Unchecked(object sender, RoutedEventArgs e)
@@ -309,7 +344,7 @@ namespace TensileTesterSharer
             WriteSpeedRef();
         }
 
-       
+
         private void btnAutoStart_Checked(object sender, RoutedEventArgs e)
         {
             if (ManSelect == true)
@@ -318,7 +353,7 @@ namespace TensileTesterSharer
                 btnAutoStart.IsChecked = false;
                 btnAutoStart.Background = new SolidColorBrush(Colors.Green);
             }
-           
+
             else if (ManSelect == false && MOETest == false && IBTest == false)
             {
                 MessageBox.Show("Please Select Test Type");
@@ -326,7 +361,7 @@ namespace TensileTesterSharer
                 btnAutoStart.Background = new SolidColorBrush(Colors.Green);
             }
             else if ((ManSelect == false) && (MOETest == true || IBTest == true))
-                {
+            {
                 btnAutoStart.Content = "Test Running";
                 btnAutoStart.Background = new SolidColorBrush(Colors.Red);
                 Autostart = true;
@@ -337,20 +372,12 @@ namespace TensileTesterSharer
                 btn_Down.IsEnabled = false;
                 btnReturn.IsEnabled = false;
                 SharedVariables.TestComplete = false;
-                SharedVariables.MaxForce=0;
-                var force = new FastLineSeries()
-                {
-                    //ItemsSource = GetRefreshData();
-                    XBindingPath = "Enc",
-                    YBindingPath = "Ana"
-                };
-
-                TestChart.Series.Add(force);
-                
-                connection.Call("Tare");
+                SharedVariables.MaxForce = 0;
+                //connection.Call("Tare");
                 connection.Call("ZeroEnc");
-                //TestChart.IsEnabled = true;
-                if(MOETest== true)
+                Chart();
+
+                if (MOETest == true)
                 {
                     SharedVariables.MOETestStarted = true;
                     SharedVariables.IBTestStarted = false;
@@ -362,16 +389,14 @@ namespace TensileTesterSharer
                     SharedVariables.MOETestStarted = false;
                     SlideUP();
                 }
-               
+
             }
-           
+
         }
 
         private void btnAutoStart_Unchecked(object sender, RoutedEventArgs e)
         {
-
             TestComplete();
-                      
         }
 
         public void TestComplete()
@@ -462,18 +487,18 @@ namespace TensileTesterSharer
                 SpeedRef = (int)(AutoSpeedTest * 2.5);
             }
 
-                try
-                {
-                   
-                    connection.WriteVariable("SpeedRef", SpeedRef);
+            try
+            {
 
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
+                connection.WriteVariable("SpeedRef", SpeedRef);
 
-                }
-            
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Connection Lost!! Resolve issue and reconnect");
+
+            }
+
         }
 
         private void SlideUP()
@@ -487,7 +512,7 @@ namespace TensileTesterSharer
 
                 MessageBox.Show("Cannot Write");
             }
-            
+
         }
 
         private void SlideUpStop()
@@ -500,7 +525,7 @@ namespace TensileTesterSharer
             {
                 MessageBox.Show("Cannot Write");
             }
-            
+
         }
 
         private void SlideDown()
@@ -513,7 +538,7 @@ namespace TensileTesterSharer
             {
                 MessageBox.Show("Cannot Write");
             }
-           
+
         }
 
         private void SlideDownStop()
@@ -526,14 +551,14 @@ namespace TensileTesterSharer
             {
                 MessageBox.Show("Cannot Write");
             }
-           
+
         }
 
         private void txt_CalFactor_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
-                connection.WriteVariable("calibration_factor", txt_CalFactor.Value);
+                connection.WriteVariable("calibration_factor", txt_CalWeight.Value);
             }
             catch (Exception)
             {
@@ -541,35 +566,28 @@ namespace TensileTesterSharer
             }
 
         }
-
-
-
         #endregion
 
         private void btnTest_Checked(object sender, RoutedEventArgs e)
         {
-            
-            if(TestChart.Series.Count > 0)
+            if (TestChart.Series.Count > 0)
             {
                 TestChart.Series.Clear();
-                btnTest.IsChecked = false;
+               
             }
-            
         }
 
         private void btnReport_Checked(object sender, RoutedEventArgs e)
         {
-
-            //TestChart.Save("sfchart.jpg");
-            TestChart.Print();
+            //Bitmap test = TestChart.SeriesClipRect;
+            //SharedVariables.img1T.Source = TestChart.SeriesClipRect;
             Report report = new Report();
             bool? Result1 = report.ShowDialog();
         }
 
         private void btnChart_Checked(object sender, RoutedEventArgs e)
         {
-           // SharedVariables.img1T.Source = TestChart;
-           
+            Chart();
         }
     }
 }

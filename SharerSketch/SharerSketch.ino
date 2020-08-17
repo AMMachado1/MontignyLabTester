@@ -8,11 +8,12 @@
 #include <Sharer.h>
 
 //Define Loadcell Pins
-//#define DOUT  20
-//#define CLK  21
+//#define DOUT  21
+//#define CLK  4
 //HX711 Loadcell;
-float calibration_factor = -26500;
+float calibration_factor;
 float Loadcell_Mass;
+uint16_t Cal_Weight;
 //Servo Speed
 int SpeedRef = 0;
 //Encoder Variables
@@ -29,7 +30,6 @@ bool Szpd;
 void SlideUp(void) {
 	
 	digitalWrite(8, false);
-	//analogWrite(8, 255);
 }
 
 // Move Slide Up Stop 
@@ -50,10 +50,19 @@ void SlideDownStop(void) {
 }
 
 //Tare Loadcell
-void Tare(void) {
-//Loadcell.tare(); //Reset the scale to 0
-}
+//void Tare(void) {
+//	Loadcell.tare(); //Reset the scale to 0
+//}
 
+//Calibrate Loadcell
+//void Calibrate(void) {
+//	Loadcell.callibrate_scale(Cal_Weight); //Calibrate the scale
+//}
+
+//Scale Loadcell
+//void Scale(void) {
+//	Loadcell.set_scale(calibration_factor); //Calibrate the scale
+//}
 
 //Zero Encoder
 void ZeroEnc(void) {
@@ -108,7 +117,9 @@ void setup() {
 	Sharer_ShareVoid(SlideUpStop);
 	Sharer_ShareVoid(SlideDown);
 	Sharer_ShareVoid(SlideDownStop);
-	Sharer_ShareVoid(Tare);
+	//Sharer_ShareVoid(Tare);
+	//Sharer_ShareVoid(Calibrate);
+	//Sharer_ShareVoid(Scale);
 	Sharer_ShareVoid(ZeroEnc);
 
 	// Share variables for read/write from desktop application
@@ -116,6 +127,7 @@ void setup() {
 	Sharer_ShareVariable(int, SpeedRef);
 	//Sharer_ShareVariable(long, zero_factor);
 	Sharer_ShareVariable(int, calibration_factor);
+	Sharer_ShareVariable(uint16_t, Cal_Weight);
 	Sharer_ShareVariable(float, Loadcell_Mass);
 	Sharer_ShareVariable(int, ana);
 	Sharer_ShareVariable(bool, Srdy);
@@ -146,12 +158,10 @@ void loop() {
 	}
 	//End Encoder
 
-	//Read Loadcell
-	//Loadcell_Mass = (Loadcell.get_units(), 1);
+	//Read/ Write Loadcell
 	//Loadcell.set_scale(calibration_factor);
-	//Loadcell_Mass = Loadcell.get_units();
-
-	
+	//Loadcell.callibrate_scale(Cal_Weight);
+	//L
 }
 
 

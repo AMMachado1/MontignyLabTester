@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,11 @@ namespace TensileTesterSharer
 {
     public class Data
     {
-        public Data(DateTime date, double force, double enc, double ana)
+        public Data(double force, double enc, double ana)
         {
-            Date = date;
             Force = force;
             Enc = enc;
             Ana = ana;
-           
-
-        }
-
-        public DateTime Date
-        {
-            get;
-            set;
         }
 
         public double Force
@@ -40,6 +32,6 @@ namespace TensileTesterSharer
             get;
             set;
         }
-        
+
     }
 }

@@ -31,9 +31,28 @@ namespace TensileTesterSharer
 
         private void btnPrint_Click(object sender, RoutedEventArgs e)
         {
+            /*
             var visualSize = new Size(Print.ActualWidth, Print.ActualHeight);
             var printControl = PrintControlFactory.Create(visualSize, Print);
             printControl.ShowPrintPreview();
+            */
+            try
+            {
+                PrintDialog pd = new PrintDialog();
+                Window window = Application.Current.MainWindow;
+                Application.Current.MainWindow = this;
+                if ((bool)pd.ShowDialog().GetValueOrDefault())
+                {
+                    Application.Current.MainWindow = window;
+                    pd.PrintVisual(this, "Test Report");
+                }
+            }
+            catch (Exception p)
+            {
+
+                MessageBox.Show("Print Error" + p);
+            }
+            
         }
     }
 }

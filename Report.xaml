@@ -6,11 +6,11 @@
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:TensileTesterSharer"
         mc:Ignorable="d"
-        Title="Report" Height="1200" Width="1100">
+        Title="Report" Height="1000" Width="700" WindowStartupLocation="CenterScreen">
 
-    <ScrollViewer HorizontalScrollBarVisibility ="Visible" VerticalScrollBarVisibility="Visible">
-        
-    <Grid  x:Name="Print">
+    <ScrollViewer HorizontalScrollBarVisibility ="Auto"  VerticalScrollBarVisibility="Auto">
+
+        <Grid  x:Name="Print">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -25,22 +25,22 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid.Resources>
                 <Style TargetType="Label"  x:Key="Label">
-                    <Setter Property="FontSize"  Value="18"  />
+                    <Setter Property="FontSize"  Value="10"  />
                     <Setter Property="FontWeight"  Value="Bold"/>
                 </Style>
                 <Style TargetType="TextBox"  x:Key="TextBox">
-                    <Setter Property="FontSize"  Value="18"  />
+                    <Setter Property="FontSize"  Value="10"  />
                     <Setter Property="FontWeight"  Value="Bold"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Padding" Value="5"/>
                 </Style>
                 <Style TargetType="syncfusion:DoubleTextBox"  x:Key="DblTextBox">
-                    <Setter Property="FontSize"  Value="18"  />
+                    <Setter Property="FontSize"  Value="10"  />
                     <Setter Property="FontWeight"  Value="Bold"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Value" Value="0.00"/>
@@ -53,14 +53,14 @@
             <Label Content="NHR Board Test Results" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                  FontSize="32" FontWeight="Bold" HorizontalAlignment="left" VerticalAlignment="Center" Margin="50"/>
             
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,20,5">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,0,5">
                 <Label Content="Date" Style="{StaticResource Label}" Margin="20,5,20,5"/>
                 <TextBox Name="txtDate" Text="Date" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
                 <Label Content="Operator"  Style="{StaticResource Label}" Margin="20,5,20,5"/>
                 <Label Content="Foreman" Style="{StaticResource Label}" Margin="20,5,20,5"/>
                 <TextBox Name="txtShift" Text="Shift" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,20,5">
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,0,5">
                 <Label Content="Time" Style="{StaticResource Label}" Margin="20,5,20,5"/>
                 <TextBox Name="txtTime" Text="Time" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
                 <TextBox Name="txtOperator" Text="Operator" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
@@ -68,12 +68,11 @@
                 <Button x:Name="btnPrint" Content="Print" Margin="1" FontSize="22" HorizontalAlignment="Stretch" Click="btnPrint_Click"/>
             </StackPanel>
 
-
-
             <GroupBox Grid.Row="3" Grid.Column="0" Margin="10" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Sample Measurement"/></TextBlock>
                 </GroupBox.Header>
+               
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -100,7 +99,10 @@
                         <Label Content="630-640kg/m2" Style="{StaticResource Label}"/>
                     </StackPanel>
                 </Grid>
+             
             </GroupBox>
+           
+       
             <GroupBox Grid.Row="4" Grid.Column="0" Margin="10" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Press"/></TextBlock>
@@ -308,7 +310,10 @@
 
                 </Grid>
             </GroupBox>
-
+           
+            <!--
+            <Image x:Name="imgT1" Grid.Row="5" Grid.Column="0"/>
+-->
         </Grid>
 
     </ScrollViewer>

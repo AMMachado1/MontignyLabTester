@@ -5,16 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using Syncfusion.UI.Xaml.Charts;
+using System.Windows.Data;
 
 namespace TensileTesterSharer
 {
     public class DataGenerator
     {
-        public int DataCount = 50000;
-        private int RateOfData = 5;
         private ObservableCollection<Data> Data;
-        private Random randomNumber;
-        int myindex = 0;
         DispatcherTimer timer;
 
         public ObservableCollection<Data> DynamicData { get; set; }
@@ -22,11 +20,8 @@ namespace TensileTesterSharer
         public DataGenerator()
         {
 
-
-            randomNumber = new Random();
             DynamicData = new ObservableCollection<Data>();
             Data = new ObservableCollection<Data>();
-            Data = ZeroData();
             RunTmr();
         }
 
@@ -43,42 +38,23 @@ namespace TensileTesterSharer
         {
             if (SharedVariables.ResetChart == true)
             {
-                DateTime date = new DateTime(2009, 1, 1);
                 double force = 0;
                 double enc = 0;
                 double ana = 0;
 
-                DynamicData.Add(new Data(date, force, enc, ana));
+                DynamicData.Add(new Data(force, enc, ana));
                 SharedVariables.ResetChart = false;
+               
             }
             else
             {
-                DateTime date = new DateTime(2009, 1, 1);
-                date = date.Add(TimeSpan.FromSeconds(1));
                 double force = SharedVariables.LoadcellScaled;
                 double enc = SharedVariables.EncoderScaled;
                 double ana = SharedVariables.AnaTest;
 
-                DynamicData.Add(new Data(date, force, enc, ana));
+                DynamicData.Add(new Data(force, enc, ana));
             }
-
-        }
-
-        public ObservableCollection<Data> ZeroData()
-        {
-
-            ObservableCollection<Data> datas = new ObservableCollection<Data>();
-
-            DateTime date = new DateTime(2009, 1, 1);
-            double force = 0;
-            double enc = 0;
-            double ana = 0;
-
-            datas.Add(new Data(date, force, enc, ana));
-
-            return datas;
-
-
+           
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -92,9 +68,9 @@ namespace TensileTesterSharer
                     SharedVariables.TestComplete = true;
 
                 }
-                if (SharedVariables.AnaTest > SharedVariables.MaxForce)
+                if (SharedVariables.LoadcellScaled > SharedVariables.MaxForce)
                 {
-                    SharedVariables.MaxForce = SharedVariables.AnaTest;
+                    SharedVariables.MaxForce = SharedVariables.LoadcellScaled;
                 }
                 AddData();
             }
@@ -106,6 +82,7 @@ namespace TensileTesterSharer
         }
 
     }
+
 }
 
 

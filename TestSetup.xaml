@@ -34,6 +34,8 @@
         <syncfusion:DoubleTextBox Name="txtEncFac"  Margin="10" Grid.Column="1"  Grid.Row="2" FontSize="22" FontWeight="Bold" MinValue="1"/>
         <Label Name ="lblLoadFac" Grid.Row="3" Grid.Column="0" Content="Loadcell Calibration Factor:"  Margin="10" FontSize="22" FontWeight="Bold"/>
         <syncfusion:DoubleTextBox Name="txtLoadFac"  Margin="10" Grid.Column="1"  Grid.Row="3" FontSize="22" FontWeight="Bold"/>
+        
+        
         <Button Name="btnClose" Grid.Row="5" Grid.Column="1" Content="Close" Margin="10" FontSize="20" FontWeight="Bold" Click="btnClose_Click"/>
     </Grid>
 </Window>

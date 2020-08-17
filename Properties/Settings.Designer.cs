@@ -50,9 +50,9 @@ namespace TensileTesterSharer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double EncFac {
+        public float EncFac {
             get {
-                return ((double)(this["EncFac"]));
+                return ((float)(this["EncFac"]));
             }
             set {
                 this["EncFac"] = value;

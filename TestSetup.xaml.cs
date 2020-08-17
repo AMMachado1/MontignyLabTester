@@ -36,7 +36,7 @@ namespace TensileTesterSharer.Properties
             Settings.Default.RetOffset = SharedVariables.ReturnOffset;
             SharedVariables.BreakForce = (double)txtTestBrkForce.Value;
             Settings.Default.BrkForce = SharedVariables.BreakForce;
-            SharedVariables.EncFac = (double)txtEncFac.Value;
+            SharedVariables.EncFac = (float)txtEncFac.Value;
             Settings.Default.EncFac = SharedVariables.EncFac;
             SharedVariables.LoadFac = (float)txtLoadFac.Value;
             Settings.Default.LoadFac = SharedVariables.LoadFac;

@@ -15,7 +15,7 @@
         <local:DataGenerator/>
     </Window.DataContext>
 
-    <Grid>
+    <Grid x:Name="Main">
         <Grid.Resources>
 
             <Style TargetType="Line" x:Key="AxisStyle">
@@ -42,7 +42,7 @@
 
         </Grid.RowDefinitions>
 
-        <Menu Width="Auto" Height="20" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Background="LightGray">
+        <Menu Width="Auto" Grid.Row="0" HorizontalAlignment="Left" Background="LightGray">
 
 
             <!-- File Menu -->
@@ -55,7 +55,7 @@
             <MenuItem Header="Setup">
                 <MenuItem Header="Test Setup" Click="TestSeup_Click"/>
 
-                <MenuItem Header="Camera"/>
+                <MenuItem Header="Calibration"/>
 
             </MenuItem>
             <!-- About Menu -->
@@ -74,10 +74,11 @@
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Trend"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
+
             <SfCharts:SfChart x:Name="TestChart" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="3" Margin="2" AreaBorderThickness="1"
                           Background="White">
 
-                
+
                 <SfCharts:SfChart.PrimaryAxis>
                     <SfCharts:NumericalAxis LabelFormat="0"
                                     Interval="10" Margin="1" 
@@ -97,19 +98,20 @@
                                      AxisLineStyle="{StaticResource AxisStyle}"
                                      MajorTickLineStyle="{StaticResource AxisStyle}"
                                      PlotOffset="10">
-                   
+
                         <SfCharts:ChartAxis.Header>
                             <TextBlock Margin="2" Text="Force(kN)" FontSize="16" FontFamily="SegoeUI"/>
                         </SfCharts:ChartAxis.Header>
 
                     </SfCharts:NumericalAxis>
-                    
+
                 </SfCharts:SfChart.SecondaryAxis>
-                
+
                 <SfCharts:FastLineSeries Label="Force" XBindingPath="Enc" YBindingPath="Ana" ItemsSource="{Binding DynamicData}"
                                        StrokeThickness="2" x:Name="chartForce"/>
-                
+
             </SfCharts:SfChart>
+
         </GroupBox>
 
         <GroupBox x:Name="Manual_Controls" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" Margin="10,10,10,10" BorderBrush="White" BorderThickness="1">
@@ -141,10 +143,13 @@
                 <ToggleButton x:Name="btn_Down" Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" IsChecked="False" Checked="btn_Down_Checked" Unchecked="btn_Down_Unchecked" Content="Down" FontSize="22" FontWeight="Bold"/>
                 <Slider x:Name="sldManSpd" BorderBrush="White" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                         HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top"  Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldManSpd_ValueChanged"/>
-                <syncfusion:IntegerTextBox x:Name="txt_CalFactor" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="10,10,10,10" MinWidth="180" NumberGroupSeparator="," Grid.Row="4" VerticalAlignment="Top" TextChanged="txt_CalFactor_TextChanged"/>
-                <Button Name="Cal" Content="Cal" Grid.Column="0" Grid.Row="5" Margin="10,10,10,10" Click="Send_Click" FontSize="18" FontWeight="Bold"/>
-                <Button Name="Tare" Content="Tare" Grid.Column="1" Grid.Row="5" Margin="10,10,10,10" Click="Tare_Click" FontSize="18" FontWeight="Bold"/>
-
+                <syncfusion:IntegerTextBox x:Name="txt_CalWeight" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="10,10,10,10" MinWidth="180" NumberGroupSeparator="," Grid.Row="4" VerticalAlignment="Top"/>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5">
+                    <Button Name="btnTare" Content="Tare" Margin="10" Click="btnTare_Click" FontSize="18" FontWeight="Bold"/>
+                    <Button Name="btnCal" Content="Cal" Margin="10" Click="btnCal_Click" FontSize="18" FontWeight="Bold"/>
+                    <Button Name="btnScale" Content="Scale" Margin="10" Click="btnScale_Click" FontSize="18" FontWeight="Bold"/>
+                    <Button Name="btnZero" Content="Zero" Margin="10" Click="btnZero_Click" FontSize="18" FontWeight="Bold"/>
+                </StackPanel>
             </Grid>
         </GroupBox>
 
@@ -182,9 +187,9 @@
                 <ToggleButton x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Checked="btnReturn_Checked" Unchecked="btnReturn_Unchecked"/>
                 <TextBox x:Name="txt_SR" Grid.Column="0" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 <TextBox x:Name="txt_SZ" Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <ToggleButton x:Name="btnTest" Content="Test" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Checked="btnTest_Checked"/>
-                <ToggleButton x:Name="btnReport" Content="Report" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Checked="btnReport_Checked"/>
-                <ToggleButton x:Name="btnChart" Content="Chart" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Checked="btnChart_Checked"/>
+                <Button x:Name="btnTest" Content="Test" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnTest_Checked"/>
+                <Button x:Name="btnReport" Content="Report" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnReport_Checked"/>
+                <Button x:Name="btnChart" Content="Chart" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnChart_Checked"/>
             </Grid>
         </GroupBox>
 
