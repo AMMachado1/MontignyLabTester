@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TensileTesterSharer"
         xmlns:SfCharts="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
-        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
-        x:Class="TensileTesterSharer.MainWindow"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf" xmlns:numberformat="clr-namespace:System.Globalization;assembly=mscorlib"
+    x:Class="TensileTesterSharer.MainWindow"
         mc:Ignorable="d"
         
-        Title="Tensile Tester" Height="800" Width="1200" Background="CornflowerBlue"  WindowState="Normal">
+        Title="Tensile Tester" Height="800" Width="1200" Background="CornflowerBlue"  WindowState="Maximized">
 
     <Window.DataContext>
         <local:DataGenerator/>
@@ -55,14 +55,18 @@
             <MenuItem Header="Setup">
                 <MenuItem Header="Test Setup" Click="TestSeup_Click"/>
 
-                <MenuItem Header="Calibration"/>
+                <MenuItem Header="Calibration" Click="Calibration_Click"/>
 
+            </MenuItem>
+
+            <MenuItem Header="Connect" Click="MenuItem_Connect_Click">
+               
             </MenuItem>
             <!-- About Menu -->
             <MenuItem Header="Help">
-                <!--
-                <MenuItem Header="About" Click="MenuItem_About_Click"/>
-                -->
+                
+                <MenuItem Header="About" Click="MenuItem_Cal_Click" />
+               
             </MenuItem>
         </Menu>
 
@@ -107,7 +111,7 @@
 
                 </SfCharts:SfChart.SecondaryAxis>
 
-                <SfCharts:FastLineSeries Label="Force" XBindingPath="Enc" YBindingPath="Ana" ItemsSource="{Binding DynamicData}"
+                <SfCharts:FastLineSeries Label="Force" XBindingPath="Enc" YBindingPath="Force" ItemsSource="{Binding DynamicData}"
                                        StrokeThickness="2" x:Name="chartForce"/>
 
             </SfCharts:SfChart>
@@ -132,24 +136,21 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+
                 </Grid.RowDefinitions>
-                <Button Margin="2,2,2,1" Content="Connect" x:Name="btn_connect" Grid.Column="0" Grid.Row="0" Click="btn_connect_Click"/>
-                <ComboBox x:Name="cmb_Port" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Width="Auto"/>
-                <ToggleButton x:Name="btn_Man" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" HorizontalAlignment="Stretch" Background="Red"
+                <ToggleButton x:Name="btn_Man" Grid.Row="0" Grid.ColumnSpan="2" Margin="10,10,10,10" HorizontalAlignment="Stretch" Background="Red"
                               IsChecked="True" Checked="btn_Man_Checked" Unchecked="btn_Man_Unchecked" Content="Auto" FontSize="22" FontWeight="Bold"/>
-                <ToggleButton x:Name="btn_Up" Grid.Row="2" Grid.Column="0" Margin="10,10,10,10" IsChecked="False" Checked="btn_Up_Checked" Unchecked="btn_Up_Unchecked" Content="Up" FontSize="22" FontWeight="Bold"/>
-                <ToggleButton x:Name="btn_Down" Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" IsChecked="False" Checked="btn_Down_Checked" Unchecked="btn_Down_Unchecked" Content="Down" FontSize="22" FontWeight="Bold"/>
-                <Slider x:Name="sldManSpd" BorderBrush="White" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                        HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top"  Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldManSpd_ValueChanged"/>
-                <syncfusion:IntegerTextBox x:Name="txt_CalWeight" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="10,10,10,10" MinWidth="180" NumberGroupSeparator="," Grid.Row="4" VerticalAlignment="Top"/>
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5">
-                    <Button Name="btnTare" Content="Tare" Margin="10" Click="btnTare_Click" FontSize="18" FontWeight="Bold"/>
-                    <Button Name="btnCal" Content="Cal" Margin="10" Click="btnCal_Click" FontSize="18" FontWeight="Bold"/>
-                    <Button Name="btnScale" Content="Scale" Margin="10" Click="btnScale_Click" FontSize="18" FontWeight="Bold"/>
-                    <Button Name="btnZero" Content="Zero" Margin="10" Click="btnZero_Click" FontSize="18" FontWeight="Bold"/>
-                </StackPanel>
+                <ToggleButton x:Name="btn_Up" Grid.Row="1" Grid.Column="0" Margin="10,10,10,10" IsChecked="False" Checked="btn_Up_Checked" Unchecked="btn_Up_Unchecked" Content="Up" FontSize="22" FontWeight="Bold"/>
+                <ToggleButton x:Name="btn_Down" Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" IsChecked="False" Checked="btn_Down_Checked" Unchecked="btn_Down_Unchecked" Content="Down" FontSize="22" FontWeight="Bold"/>
+                <Slider x:Name="sldManSpd" BorderBrush="White" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top"  Minimum="0" Maximum="100" TickFrequency="10" TickPlacement="BottomRight" ValueChanged="sldManSpd_ValueChanged"/>
+
+                <Button Name="btnTare" Content="Tare" Margin="10" Grid.Row="3" Grid.Column="0" Click="btnTare_Click" FontSize="18" FontWeight="Bold"/>
+                <Button Name="btnZero" Content="Zero" Margin="10" Grid.Row="3" Grid.Column="1" Click="btnZero_Click" FontSize="18" FontWeight="Bold"/>
+                <syncfusion:DoubleTextBox x:Name="txt_Kg" Margin="1" Grid.Row="4" Grid.ColumnSpan="2"
+                           FontWeight="Bold"  Background="White" IsEnabled="False" FontSize="30"
+                           BorderThickness="0" Height="40" TextAlignment="Center"/>
+
             </Grid>
         </GroupBox>
 
@@ -176,20 +177,31 @@
                     <RowDefinition Height="Auto"/>
 
                 </Grid.RowDefinitions>
-
-                <ToggleButton x:Name="btnIB" Content="IB" Grid.Row="0" Grid.Column="0" Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False" Checked="btnIB_Checked" Unchecked="btnIB_Unchecked"/>
-                <ToggleButton x:Name="btnMOE" Content="MOE" Grid.Row="0" Grid.Column="1" Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False" Checked="btnMOE_Checked" Unchecked="btnMOE_Unchecked"/>
-                <ToggleButton x:Name="btnAutoStart" Content="Start" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
+                <Label Name="lblTestStep" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="22" FontWeight="Bold"
+       Background="White"/>
+                <ToggleButton x:Name="btnIB" Content="IB" Grid.Row="1" Grid.Column="0"
+                              Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False"
+                              Checked="btnIB_Checked" MinHeight="40" Unchecked="btnIB_Unchecked"/>
+                <ToggleButton x:Name="btnMOE" Content="MOR" Grid.Row="1" Grid.Column="1"
+                              Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False"
+                              Checked="btnMOE_Checked" Unchecked="btnMOE_Unchecked"/>
+                <ToggleButton x:Name="btnFS" Content="FACE" Grid.Row="2" Grid.Column="0"
+                              Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False"
+                              Checked="btnFS_Checked"  Unchecked="btnFS_Unchecked"/>
+                <ToggleButton x:Name="btnSH" Content="SCREW" Grid.Row="2" Grid.Column="1"
+                              Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False"
+                              Checked="btnSH_Checked"  Unchecked="btnSH_Unchecked"/>
+                <ToggleButton x:Name="btnAutoStart" Content="Start" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
                         IsChecked="False" Checked="btnAutoStart_Checked" Unchecked="btnAutoStart_Unchecked" Background="Green" FontSize="22" FontWeight="Bold"/>
-                <Slider x:Name="sldAutoSpd" BorderBrush="White" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"
-                        Margin="10" VerticalAlignment="Top"
-                        Minimum="0" Maximum="100" TickFrequency="25" TickPlacement="BottomRight" ValueChanged="sldAutoSpd_ValueChanged"/>
-                <ToggleButton x:Name="btnReturn" Content="Return" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Checked="btnReturn_Checked" Unchecked="btnReturn_Unchecked"/>
-                <TextBox x:Name="txt_SR" Grid.Column="0" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <TextBox x:Name="txt_SZ" Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="5" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <Button x:Name="btnTest" Content="Test" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnTest_Checked"/>
-                <Button x:Name="btnReport" Content="Report" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnReport_Checked"/>
-                <Button x:Name="btnChart" Content="Chart" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Click="btnChart_Checked"/>
+                <ToggleButton x:Name="btnReturn" Content="Return" Grid.Row="4" Grid.Column="0"
+                              Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold"
+                              Checked="btnReturn_Checked" Unchecked="btnReturn_Unchecked"/>
+                <Button x:Name="btnChartPrint" Content="Print Chart" Grid.Row="5" Grid.Column="0"
+                        Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Click="btnChartPrint_Click"/>
+                <Button x:Name="btnReport" Content="Report" Grid.Row="6" Grid.Column="0"
+                        Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Click="btnReport_Checked"/>
+                <Button x:Name="btnTestReset" Content="Reset Test" Grid.Row="7" Grid.Column="0"
+                        Grid.ColumnSpan="2" Margin="10" FontSize="22" FontWeight="Bold" Click="btnTestReset_Click"/>
             </Grid>
         </GroupBox>
 
@@ -199,7 +211,7 @@
         <GroupBox Grid.Column="0" Grid.Row="1" Margin="5,0,5,0"  BorderBrush="White" BorderThickness="1">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Current Force"/></TextBlock>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Max Force (Kn)"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
@@ -216,7 +228,7 @@
             </GroupBox.BindingGroup>
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Distance"/></TextBlock>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Distance (mm)"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
@@ -231,15 +243,20 @@
             </GroupBox.BindingGroup>
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Maximum Force"/></TextBlock>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Maximum Force (Mpa)"/></TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Viewbox Stretch="Fill">
                 <syncfusion:DoubleTextBox x:Name="txtMaxForce" Margin="1"
                     FontWeight="Bold"  Background="White" IsEnabled="False"
-                    BorderThickness="0"/>
+                    BorderThickness="0">
+                    <syncfusion:DoubleTextBox.NumberFormat >
+                        <numberformat:NumberFormatInfo NumberGroupSeparator="/" NumberDecimalDigits="4" NumberDecimalSeparator="."/>
+                    </syncfusion:DoubleTextBox.NumberFormat>
+                </syncfusion:DoubleTextBox>
+                
             </Viewbox>
         </GroupBox>
-
+       
     </Grid>
 </Window>

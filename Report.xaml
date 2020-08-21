@@ -6,21 +6,21 @@
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:TensileTesterSharer"
         mc:Ignorable="d"
-        Title="Report" Height="1000" Width="700" WindowStartupLocation="CenterScreen">
+        Title="Report" Height="1100" Width="800" WindowStartupLocation="CenterScreen">
 
     <ScrollViewer HorizontalScrollBarVisibility ="Auto"  VerticalScrollBarVisibility="Auto">
 
-        <Grid  x:Name="Print">
+        <Grid  x:Name="Print" Margin="50,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                
-                
+
+
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="50"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -49,35 +49,37 @@
             </Grid.Resources>
 
             <Image x:Name="MontignyLogo" Grid.Row="0" Grid.Column="0" Source="Images/MontignyLogo.PNG"/>
-
-            <Label Content="NHR Board Test Results" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
-                 FontSize="32" FontWeight="Bold" HorizontalAlignment="left" VerticalAlignment="Center" Margin="50"/>
+            <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                <Label Content="NHR Board Test Results" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" Margin="0,25"/>
+            </StackPanel>
             
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,0,5">
-                <Label Content="Date" Style="{StaticResource Label}" Margin="20,5,20,5"/>
-                <TextBox Name="txtDate" Text="Date" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
-                <Label Content="Operator"  Style="{StaticResource Label}" Margin="20,5,20,5"/>
-                <Label Content="Foreman" Style="{StaticResource Label}" Margin="20,5,20,5"/>
-                <TextBox Name="txtShift" Text="Shift" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,5,0,5">
-                <Label Content="Time" Style="{StaticResource Label}" Margin="20,5,20,5"/>
-                <TextBox Name="txtTime" Text="Time" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
-                <TextBox Name="txtOperator" Text="Operator" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
-                <TextBox Name="txtForeman" Text="Foreman" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
-                <Button x:Name="btnPrint" Content="Print" Margin="1" FontSize="22" HorizontalAlignment="Stretch" Click="btnPrint_Click"/>
-            </StackPanel>
 
-            <GroupBox Grid.Row="3" Grid.Column="0" Margin="10" BorderBrush="Black"  BorderThickness="1">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                <Label Content="Date" Style="{StaticResource Label}" Margin="5"/>
+                <TextBox Name="txtDate" Text="Date" Style="{StaticResource TextBox}" Margin="5"/>
+                <Label Content="Time" Style="{StaticResource Label}" Margin="5"/>
+                <TextBox Name="txtTime" Text="Time" Style="{StaticResource TextBox}" Margin="5"/>
+                <Label Content="Operator"  Style="{StaticResource Label}" Margin="5"/>
+                <TextBox Name="txtOperator" Text="Operator" Style="{StaticResource TextBox}" Margin="5"/>
+                <Label Content="Foreman" Style="{StaticResource Label}" Margin="5"/>
+                <TextBox Name="txtForeman" Text="Foreman" Style="{StaticResource TextBox}" Margin="20,5,20,5"/>
+                <TextBox Name="txtShift" Text="Shift" Style="{StaticResource TextBox}" Margin="5"/>
+                <Button x:Name="btnPrint" Content="Print" Margin="1" FontSize="22"
+                        HorizontalAlignment="Stretch" Background="White" BorderThickness="0" Click="btnPrint_Click"/>
+               
+            </StackPanel>
+           
+            <GroupBox Grid.Row="2" Grid.Column="0" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Sample Measurement"/></TextBlock>
                 </GroupBox.Header>
-               
+
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -99,18 +101,20 @@
                         <Label Content="630-640kg/m2" Style="{StaticResource Label}"/>
                     </StackPanel>
                 </Grid>
-             
+
             </GroupBox>
-           
-       
-            <GroupBox Grid.Row="4" Grid.Column="0" Margin="10" BorderBrush="Black"  BorderThickness="1">
+
+
+            <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Press"/></TextBlock>
                 </GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -125,6 +129,9 @@
                         <Label Content="3rd Stage:" Style="{StaticResource Label}"/>
                         <Label Content="4th Stage:" Style="{StaticResource Label}"/>
                         <Label Content="Open" Style="{StaticResource Label}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        
                         <Label Content="1st Stage (Up)" Style="{StaticResource Label}"/>
                         <Label Content="1st Stage (Down)" Style="{StaticResource Label}"/>
                         <Label Content="2nd Stage (Up)" Style="{StaticResource Label}"/>
@@ -134,7 +141,6 @@
                         <Label Content="Accumulated (Up)" Style="{StaticResource Label}"/>
                         <Label Content="Accumulated (Down)" Style="{StaticResource Label}"/>
                         <Label Content="Total Press Cycle" Style="{StaticResource Label}"/>
-
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="1">
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
@@ -146,6 +152,8 @@
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="3">
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
@@ -155,23 +163,23 @@
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Style="{StaticResource DblTextBox}"/>
-
+                        
                     </StackPanel>
 
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="3" Grid.Column="1" Margin="10" BorderBrush="Black"  BorderThickness="1">
+            <GroupBox Grid.Row="2" Grid.Column="1" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Moistures"/></TextBlock>
                 </GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -198,7 +206,7 @@
                         <syncfusion:DoubleTextBox Name="txtCBDScale" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtCAB" Style="{StaticResource DblTextBox}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Grid.Column="3">
+                    <StackPanel Orientation="Vertical" Grid.Column="4">
                         <TextBox Name="txtT1" Text="Time" Style="{StaticResource TextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtSADTime" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtT2" Style="{StaticResource DblTextBox}"/>
@@ -207,15 +215,15 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Grid.Column="1" Margin="10,10,10,10" BorderBrush="Black"  BorderThickness="1">
+            <GroupBox Grid.Row="3" Grid.Column="2" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Glue Station"/></TextBlock>
                 </GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -228,7 +236,7 @@
                         <Label Content="Drive ref (Hz):" Style="{StaticResource Label}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="1">
-                        <Label Content="Core" Style="{StaticResource Label}"/>
+                        <Label Content="Core" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
                         <syncfusion:DoubleTextBox Name="txtCoreWaterIn" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtCoreScale" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtCoreFeedScrew" Style="{StaticResource DblTextBox}"/>
@@ -237,7 +245,7 @@
                         <syncfusion:DoubleTextBox Name="txtCoreDriveRef" Style="{StaticResource DblTextBox}"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="2">
-                        <Label Content="Surface" Style="{StaticResource Label}"/>
+                        <Label Content="Surface" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
                         <syncfusion:DoubleTextBox Name="txtSfceWaterIn" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtSfceScale" Style="{StaticResource DblTextBox}"/>
                         <syncfusion:DoubleTextBox Name="txtSfceFeedScrew" Style="{StaticResource DblTextBox}"/>
@@ -248,15 +256,15 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Grid.Column="2" Margin="10,10,10,10" BorderBrush="Black"  BorderThickness="1">
+            <GroupBox Grid.Row="4" Grid.Column="0" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Forming Station"/></TextBlock>
                 </GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -278,15 +286,15 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="3" Grid.Column="2" Margin="10" BorderBrush="Black"  BorderThickness="1">
+            <GroupBox Grid.Row="2" Grid.Column="2" Margin="5" BorderBrush="Black"  BorderThickness="1">
                 <GroupBox.Header>
                     <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Flakers"/></TextBlock>
                 </GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -310,12 +318,181 @@
 
                 </Grid>
             </GroupBox>
-           
-            <!--
-            <Image x:Name="imgT1" Grid.Row="5" Grid.Column="0"/>
--->
+            <GroupBox Grid.Row="4" Grid.Column="1" Margin="5" BorderBrush="Black"  BorderThickness="1">
+                <GroupBox.Header>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Screw Holding"/></TextBlock>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                       
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <Label Content="Face" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="No:" Style="{StaticResource Label}"/>
+                        <Label Content="1:" Style="{StaticResource Label}"/>
+                        <Label Content="2:" Style="{StaticResource Label}"/>
+                        <Label Content="3:" Style="{StaticResource Label}"/>
+                        <Label Content="4:" Style="{StaticResource Label}"/>
+                        <Label Content="Avg:" Style="{StaticResource Label}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="1">
+                        <Label Content="" Style="{StaticResource Label}"/>
+                        <Label Content="600N" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txtShf1" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShf2" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShf3" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShf4" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShfAvg" Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        <Label Content="Edge" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="400N" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txtShe1" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShe2" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShe3" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtShe4" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtSheAvg" Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="4" Grid.Column="2" Margin="5" BorderBrush="Black"  BorderThickness="1">
+                <GroupBox.Header>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Face Strength"/></TextBlock>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <Label Content="Top" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="No:" Style="{StaticResource Label}"/>
+                        <Label Content="1:" Style="{StaticResource Label}"/>
+                        <Label Content="2:" Style="{StaticResource Label}"/>
+                        <Label Content="3:" Style="{StaticResource Label}"/>
+                        <Label Content="4:" Style="{StaticResource Label}"/>
+                        <Label Content="Avg:" Style="{StaticResource Label}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="1">
+                        <Label Content="" Style="{StaticResource Label}"/>
+                        <Label Content="MPA" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txtFst1" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFst2" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFst3" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFst4" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFstAvg" Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        <Label Content="Bot" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="MPA" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txtFsb1" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFsb2" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFsb3" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFsb4" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtFsbAvg" Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" BorderBrush="Black"  BorderThickness="1">
+                <GroupBox.Header>
+                    <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Universal Results"/></TextBlock>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <Label Content="Internal Bond" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="No" Style="{StaticResource Label}"/>
+                        <Label Content="1T" Style="{StaticResource Label}"/>
+                        <Label Content="2B" Style="{StaticResource Label}"/>
+                        <Label Content="3T" Style="{StaticResource Label}"/>
+                        <Label Content="4B" Style="{StaticResource Label}"/>
+                        <Label Content="5T" Style="{StaticResource Label}"/>
+                        <Label Content="6B" Style="{StaticResource Label}"/>
+                        <Label Content="7T" Style="{StaticResource Label}"/>
+                        <Label Content="8B" Style="{StaticResource Label}"/>
+                        <Label Content="Avg" Style="{StaticResource Label}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Vertical" Grid.Column="1">
+                        <Label Content="" Style="{StaticResource Label}"/>
+                        <Label Content="Mpa(0.35)" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb1t" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb2b" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb3t" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb4b" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb5t" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb6b" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb7t" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIb8b" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtIbAvg" Style="{StaticResource DblTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="2">
+                        <Label Content="MOE/MOR" Style="{StaticResource Label}" FontWeight="Bold" Background="Gray"/>
+                        <Label Content="Thickness" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txt1Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt2Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt3Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt4Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt5Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt6Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt7Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt8Thick" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtAvgThick" Style="{StaticResource DblTextBox}"/>
+
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="3">
+                        <Label Content="" Style="{StaticResource Label}"/>
+                        <Label Content="Reading" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txt1Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt2Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt3Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt4Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt5Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt6Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt7Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt8Read" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtAvgRead" Style="{StaticResource DblTextBox}"/>
+
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="4">
+                        <Label Content="" Style="{StaticResource Label}"/>
+                        <Label Content="Mpa(15)" Style="{StaticResource Label}"/>
+                        <syncfusion:DoubleTextBox Name="txt1Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt2Mpa"  Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt3Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt4Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt5Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt6Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt7Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txt8Mpa" Style="{StaticResource DblTextBox}"/>
+                        <syncfusion:DoubleTextBox Name="txtAvgMpa" Style="{StaticResource DblTextBox}"/>
+
+                    </StackPanel>
+
+                </Grid>
+            </GroupBox>
+
+
         </Grid>
 
     </ScrollViewer>
-    
+
 </Window>

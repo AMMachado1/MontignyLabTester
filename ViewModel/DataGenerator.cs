@@ -48,7 +48,7 @@ namespace TensileTesterSharer
             }
             else
             {
-                double force = SharedVariables.LoadcellScaled;
+                double force = SharedVariables.TestIBMpa;
                 double enc = SharedVariables.EncoderScaled;
                 double ana = SharedVariables.AnaTest;
 
@@ -61,17 +61,14 @@ namespace TensileTesterSharer
         {
             if (SharedVariables.MOETestStarted == true || SharedVariables.IBTestStarted == true)
             {
-                SharedVariables.ForceSample2 = SharedVariables.ForceSample1;
-                SharedVariables.ForceSample1 = SharedVariables.AnaTest;
-                if ((SharedVariables.ForceSample2 - SharedVariables.ForceSample1) > SharedVariables.BreakForce)
+                SharedVariables.ForceMpaSample2 = SharedVariables.ForceMpaSample1;
+                SharedVariables.ForceMpaSample1 = SharedVariables.TestMpa;
+                if ((SharedVariables.ForceMpaSample2 - SharedVariables.ForceMpaSample1) > SharedVariables.BreakForce)
                 {
                     SharedVariables.TestComplete = true;
 
                 }
-                if (SharedVariables.LoadcellScaled > SharedVariables.MaxForce)
-                {
-                    SharedVariables.MaxForce = SharedVariables.LoadcellScaled;
-                }
+                
                 AddData();
             }
             else if (SharedVariables.ResetChart == true)

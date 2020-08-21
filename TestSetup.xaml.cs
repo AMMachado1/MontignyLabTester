@@ -26,8 +26,8 @@ namespace TensileTesterSharer.Properties
             InitializeComponent();
             txtReturnOffset.Value = Settings.Default.RetOffset;
             txtTestBrkForce.Value = Settings.Default.BrkForce;
-            txtEncFac.Value = Settings.Default.EncFac;
-            txtLoadFac.Value = Settings.Default.LoadFac;
+            txtAutoSpeed.Value = Settings.Default.AutoSpeed;
+            
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -36,12 +36,17 @@ namespace TensileTesterSharer.Properties
             Settings.Default.RetOffset = SharedVariables.ReturnOffset;
             SharedVariables.BreakForce = (double)txtTestBrkForce.Value;
             Settings.Default.BrkForce = SharedVariables.BreakForce;
-            SharedVariables.EncFac = (float)txtEncFac.Value;
-            Settings.Default.EncFac = SharedVariables.EncFac;
-            SharedVariables.LoadFac = (float)txtLoadFac.Value;
-            Settings.Default.LoadFac = SharedVariables.LoadFac;
+            SharedVariables.AutoSpeed = (int)txtAutoSpeed.Value;
+            Settings.Default.AutoSpeed = SharedVariables.AutoSpeed;
+            
             Settings.Default.Save();
             this.DialogResult = true;
+        }
+
+        private void txtAutoSpeed_ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            SharedVariables.AutoSpeed = (int)txtAutoSpeed.Value;
+            
         }
     }
 }

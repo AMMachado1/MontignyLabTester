@@ -6,36 +6,41 @@
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:TensileTesterSharer.Properties"
         mc:Ignorable="d"
-        Title="Test Setup" Height="450" Width="800">
+        Title="Test Setup" Height="450" Width="800" Background="LightBlue" WindowStartupLocation="CenterScreen">
 
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            
-        </Grid.ColumnDefinitions>
+       
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" BorderBrush="Black"  BorderThickness="1">
+            <GroupBox.Header>
+                <TextBlock FontWeight="Bold" FontSize="18"><Run Text="Setup"/></TextBlock>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Return Offset:" Margin="10" FontSize="22" FontWeight="Bold"/>
+                <syncfusion:DoubleTextBox Name="txtReturnOffset"  Margin="10" Grid.Column="1"  Grid.Row="0" FontSize="22" FontWeight="Bold"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Test Break Force:"  Margin="10" FontSize="22" FontWeight="Bold"/>
+                <syncfusion:DoubleTextBox Name="txtTestBrkForce"  Margin="10" Grid.Column="1"  Grid.Row="1" FontSize="22" FontWeight="Bold"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Auto Test Speed:"  Margin="10" FontSize="22" FontWeight="Bold"/>
+                <syncfusion:IntegerTextBox Name="txtAutoSpeed"  Margin="10" Grid.Column="1"  Grid.Row="2" FontSize="22" FontWeight="Bold"
+                   ValueChanged="txtAutoSpeed_ValueChanged" MinValue="0" MaxValue="100"/>
 
 
-        <Label Name="lblSeroOffset" Grid.Row="0" Grid.Column="0" Content="Return Offset:" Margin="10" FontSize="22" FontWeight="Bold"/>
-        <syncfusion:DoubleTextBox Name="txtReturnOffset"  Margin="10" Grid.Column="1"  Grid.Row="0" FontSize="22" FontWeight="Bold"/>
-        <Label Name ="lblTestBreakForce" Grid.Row="1" Grid.Column="0" Content="Test Break Force:"  Margin="10" FontSize="22" FontWeight="Bold"/>
-        <syncfusion:DoubleTextBox Name="txtTestBrkForce"  Margin="10" Grid.Column="1"  Grid.Row="1" FontSize="22" FontWeight="Bold"/>
-        <Label Name ="lblEncFac" Grid.Row="2" Grid.Column="0" Content="Encoder Calibration Factor:"  Margin="10" FontSize="22" FontWeight="Bold"/>
-        <syncfusion:DoubleTextBox Name="txtEncFac"  Margin="10" Grid.Column="1"  Grid.Row="2" FontSize="22" FontWeight="Bold" MinValue="1"/>
-        <Label Name ="lblLoadFac" Grid.Row="3" Grid.Column="0" Content="Loadcell Calibration Factor:"  Margin="10" FontSize="22" FontWeight="Bold"/>
-        <syncfusion:DoubleTextBox Name="txtLoadFac"  Margin="10" Grid.Column="1"  Grid.Row="3" FontSize="22" FontWeight="Bold"/>
-        
-        
-        <Button Name="btnClose" Grid.Row="5" Grid.Column="1" Content="Close" Margin="10" FontSize="20" FontWeight="Bold" Click="btnClose_Click"/>
+                <Button Name="btnClose" Grid.Row="5" Grid.Column="1" Content="Close" Margin="10" FontSize="20" FontWeight="Bold" Click="btnClose_Click"/>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

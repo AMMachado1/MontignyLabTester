@@ -4,13 +4,14 @@
  Author:	Alberto Machado
 */
 
-//#include <HX711.h>
+#include <HX711.h>
 #include <Sharer.h>
+#include <eeprom.h>
 
 //Define Loadcell Pins
-//#define DOUT  21
-//#define CLK  4
-//HX711 Loadcell;
+#define DOUT  4
+#define CLK  5
+HX711 Loadcell;
 float calibration_factor;
 float Loadcell_Mass;
 uint16_t Cal_Weight;
@@ -50,27 +51,28 @@ void SlideDownStop(void) {
 }
 
 //Tare Loadcell
-//void Tare(void) {
-//	Loadcell.tare(); //Reset the scale to 0
-//}
+void Tare(void) {
+	Loadcell.tare(); //Reset the scale to 0
+}
 
 //Calibrate Loadcell
-//void Calibrate(void) {
-//	Loadcell.callibrate_scale(Cal_Weight); //Calibrate the scale
-//}
+void Calibrate(void) {
+	Loadcell.callibrate_scale(Cal_Weight,5); //Calibrate the scale
+	calibration_factor = Loadcell.get_scale();
+	eeprom_write_float(0, calibration_factor);
+	
+}
 
-//Scale Loadcell
-//void Scale(void) {
-//	Loadcell.set_scale(calibration_factor); //Calibrate the scale
-//}
-
+//Set Scale of Loadcell
+/*
+void SetScale(void) {
+	Loadcell.set_scale(calibration_factor); //Scale the Loadcell
+}
+*/
 //Zero Encoder
 void ZeroEnc(void) {
 	encoder = 0;
 }
-
-
-
 
 void setup() {
 	
@@ -99,8 +101,9 @@ void setup() {
 	//End Encoder Setup
 
 	// Start Scale
-	//Loadcell.begin(DOUT, CLK);
-	
+	Loadcell.begin(DOUT, CLK);
+	calibration_factor = eeprom_read_float(0);
+	Loadcell.set_scale(calibration_factor);
 	
 	//long zero_factor = Loadcell.read_average(); //Get a baseline reading
 
@@ -117,17 +120,17 @@ void setup() {
 	Sharer_ShareVoid(SlideUpStop);
 	Sharer_ShareVoid(SlideDown);
 	Sharer_ShareVoid(SlideDownStop);
-	//Sharer_ShareVoid(Tare);
-	//Sharer_ShareVoid(Calibrate);
-	//Sharer_ShareVoid(Scale);
+	Sharer_ShareVoid(Tare);
+	Sharer_ShareVoid(Calibrate);
+	//Sharer_ShareVoid(SetScale);
 	Sharer_ShareVoid(ZeroEnc);
 
 	// Share variables for read/write from desktop application
 	Sharer_ShareVariable(long, encoder);
 	Sharer_ShareVariable(int, SpeedRef);
 	//Sharer_ShareVariable(long, zero_factor);
-	Sharer_ShareVariable(int, calibration_factor);
-	Sharer_ShareVariable(uint16_t, Cal_Weight);
+	//Sharer_ShareVariable(float, calibration_factor);
+	Sharer_ShareVariable(int, Cal_Weight);
 	Sharer_ShareVariable(float, Loadcell_Mass);
 	Sharer_ShareVariable(int, ana);
 	Sharer_ShareVariable(bool, Srdy);
@@ -158,12 +161,10 @@ void loop() {
 	}
 	//End Encoder
 
-	//Read/ Write Loadcell
-	//Loadcell.set_scale(calibration_factor);
-	//Loadcell.callibrate_scale(Cal_Weight);
-	//L
+	//Read Loadcell
+	Loadcell_Mass = Loadcell.get_units(5);
+	calibration_factor = Loadcell.get_scale();
 }
-
 
 void ai0() {
 	// ai0 is activated if DigitalPin nr 2 is going from LOW to HIGH
