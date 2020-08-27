@@ -32,7 +32,7 @@ namespace TensileTesterSharer
         public static bool Servo_Rdy;
         public static bool Servo_ZSpd;
         public static bool MOETestStarted;
-        public static bool IBTestStarted;
+        public static bool TestStarted;
         public static bool TestComplete;
         public static bool Connect;
         public static string ComPort;

@@ -54,21 +54,13 @@ namespace TensileTesterSharer
 
                 DynamicData.Add(new Data(force, enc, ana));
             }
-           
+          
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (SharedVariables.MOETestStarted == true || SharedVariables.IBTestStarted == true)
-            {
-                SharedVariables.ForceMpaSample2 = SharedVariables.ForceMpaSample1;
-                SharedVariables.ForceMpaSample1 = SharedVariables.TestMpa;
-                if ((SharedVariables.ForceMpaSample2 - SharedVariables.ForceMpaSample1) > SharedVariables.BreakForce)
-                {
-                    SharedVariables.TestComplete = true;
-
-                }
-                
+            if (SharedVariables.TestStarted == true)
+            {                
                 AddData();
             }
             else if (SharedVariables.ResetChart == true)

@@ -84,8 +84,8 @@
 
 
                 <SfCharts:SfChart.PrimaryAxis>
-                    <SfCharts:NumericalAxis LabelFormat="0"
-                                    Interval="10" Margin="1" 
+                    <SfCharts:NumericalAxis LabelFormat="0.01"
+                                    Interval="0.1" Margin="1" 
                                     AxisLineStyle="{StaticResource AxisStyle}" 
                                     MajorTickLineStyle="{StaticResource AxisStyle}"
                                     PlotOffset="10">
@@ -97,8 +97,8 @@
                 </SfCharts:SfChart.PrimaryAxis>
 
                 <SfCharts:SfChart.SecondaryAxis>
-                    <SfCharts:NumericalAxis LabelFormat="0"
-                                     Interval="5" Margin="1" 
+                    <SfCharts:NumericalAxis LabelFormat="0.01"
+                                     Interval="0.1" Margin="1" 
                                      AxisLineStyle="{StaticResource AxisStyle}"
                                      MajorTickLineStyle="{StaticResource AxisStyle}"
                                      PlotOffset="10">
@@ -147,7 +147,7 @@
 
                 <Button Name="btnTare" Content="Tare" Margin="10" Grid.Row="3" Grid.Column="0" Click="btnTare_Click" FontSize="18" FontWeight="Bold"/>
                 <Button Name="btnZero" Content="Zero" Margin="10" Grid.Row="3" Grid.Column="1" Click="btnZero_Click" FontSize="18" FontWeight="Bold"/>
-                <syncfusion:DoubleTextBox x:Name="txt_Kg" Margin="1" Grid.Row="4" Grid.ColumnSpan="2"
+                <syncfusion:DoubleTextBox x:Name="txt_Kg" Margin="10" Grid.Row="4" Grid.ColumnSpan="2"
                            FontWeight="Bold"  Background="White" IsEnabled="False" FontSize="30"
                            BorderThickness="0" Height="40" TextAlignment="Center"/>
 
@@ -178,7 +178,7 @@
 
                 </Grid.RowDefinitions>
                 <Label Name="lblTestStep" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="22" FontWeight="Bold"
-       Background="White"/>
+       Background="White" Margin="10"/>
                 <ToggleButton x:Name="btnIB" Content="IB" Grid.Row="1" Grid.Column="0"
                               Margin="10" FontSize="22" FontWeight="Bold" IsChecked="False"
                               Checked="btnIB_Checked" MinHeight="40" Unchecked="btnIB_Unchecked"/>
@@ -217,8 +217,11 @@
             <Viewbox Stretch="Fill">
                 <syncfusion:DoubleTextBox x:Name="txt_Force" Margin="1"
                            FontWeight="Bold"  Background="White" IsEnabled="False"
-                           BorderThickness="0"
-                           />
+                           BorderThickness="0">
+                    <syncfusion:DoubleTextBox.NumberFormat >
+                    <numberformat:NumberFormatInfo NumberGroupSeparator="/" NumberDecimalDigits="3" NumberDecimalSeparator="."/>
+                </syncfusion:DoubleTextBox.NumberFormat>
+                        </syncfusion:DoubleTextBox>
             </Viewbox>
         </GroupBox>
 
@@ -251,7 +254,7 @@
                     FontWeight="Bold"  Background="White" IsEnabled="False"
                     BorderThickness="0">
                     <syncfusion:DoubleTextBox.NumberFormat >
-                        <numberformat:NumberFormatInfo NumberGroupSeparator="/" NumberDecimalDigits="4" NumberDecimalSeparator="."/>
+                        <numberformat:NumberFormatInfo NumberGroupSeparator="/" NumberDecimalDigits="3" NumberDecimalSeparator="."/>
                     </syncfusion:DoubleTextBox.NumberFormat>
                 </syncfusion:DoubleTextBox>
                 

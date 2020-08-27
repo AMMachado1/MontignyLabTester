@@ -29,6 +29,9 @@ namespace TensileTesterSharer
             InitializeComponent();
             txtDate.Text = System.DateTime.Now.ToString("yy/MM/dd");
             txtTime.Text = DateTime.Now.ToString("hh:mm:ss");
+            txtOperator.Text = SharedVariables.Operator;
+            txtForeman.Text = SharedVariables.Foreman;
+            txtShift.Text = SharedVariables.Shift;
             txtShf1.Value = SharedVariables.Shf1;
             txtShf2.Value = SharedVariables.Shf2;
             txtShf3.Value = SharedVariables.Shf3;
@@ -76,15 +79,29 @@ namespace TensileTesterSharer
             txt7Mpa.Value = SharedVariables.IB7Mpa;
             txt8Mpa.Value = SharedVariables.IB8Mpa;
             txtAvgMpa.Value = SharedVariables.IBAvgMpa;
+            txtIb1t.Value = SharedVariables.IB1T;
+            txtIb2b.Value = SharedVariables.IB1T;
+            txtIb3t.Value = SharedVariables.IB1T;
+            txtIb4b.Value = SharedVariables.IB1T;
+            txtIb5t.Value = SharedVariables.IB1T;
+            txtIb6b.Value = SharedVariables.IB1T;
+            txtIb7t.Value = SharedVariables.IB1T;
+            txtIb8b.Value = SharedVariables.IB1T;
+            txtIbAvg.Value = SharedVariables.IB1T;
+            txt1Mpa.Value = SharedVariables.IB1Mpa;
+            txt2Mpa.Value = SharedVariables.IB2Mpa;
+            txt3Mpa.Value = SharedVariables.IB3Mpa;
+            txt4Mpa.Value = SharedVariables.IB4Mpa;
+            txt5Mpa.Value = SharedVariables.IB5Mpa;
+            txt6Mpa.Value = SharedVariables.IB6Mpa;
+            txt7Mpa.Value = SharedVariables.IB7Mpa;
+            txt8Mpa.Value = SharedVariables.IB8Mpa;
+            txtAvgMpa.Value = SharedVariables.IBAvgMpa;
         }
 
         private void btnPrint_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            var visualSize = new Size(Print.ActualWidth, Print.ActualHeight);
-            var printControl = PrintControlFactory.Create(visualSize, Print);
-            printControl.ShowPrintPreview();
-            */
+           
             try
             {
                 PrintDialog pd = new PrintDialog();

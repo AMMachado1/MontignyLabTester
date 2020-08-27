@@ -45,12 +45,14 @@ namespace TensileTesterSharer
         public bool FaceTest = false;
         public bool ScrewTest = false;
         public int TestStepCount = 0;
+        public bool TestCompleteOneShot = false;
         public string TestSelected;
         private bool ReturnSelected = false;
         public bool exists = false;
         public SharerConnection connection;
         DispatcherTimer UpdateUItmr;
         DispatcherTimer Arduino;
+        DispatcherTimer SampleBreak;
 
        // public ObservableCollection<Data> DynamicData { get; set; }
 
@@ -60,6 +62,7 @@ namespace TensileTesterSharer
             SharedVariables.ReturnOffset = Settings.Default.RetOffset;
             SharedVariables.BreakForce = Settings.Default.BrkForce;
             SharedVariables.EncFac = Settings.Default.EncFac;
+            SharedVariables.ForceMpaSample1 = 0;
            
             sldManSpd.Value = 0;
            
@@ -97,6 +100,11 @@ namespace TensileTesterSharer
                 Arduino.Interval = new TimeSpan(0, 0, 0, 0, 100);
                 Arduino.Tick += Arduino_Tick;
                 Arduino.Start();
+                SampleBreak = new DispatcherTimer();
+                SampleBreak.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+                SampleBreak.Tick += SampleBreak_Tick;
+                SampleBreak.Start();
+
             }
             else
             {
@@ -105,21 +113,25 @@ namespace TensileTesterSharer
 
         }
 
+        private void SampleBreak_Tick(object sender, EventArgs e)
+        {
+
+            if (Autostart == true && SharedVariables.TestIBMpa > 0.1)
+            {
+                //SharedVariables.ForceMpaSample2 = SharedVariables.ForceMpaSample1;
+                SharedVariables.ForceMpaSample1 = SharedVariables.TestIBMpa;
+                
+            }
+        }
         private void Arduino_Tick(object sender, EventArgs e)
         {
             try
             {
-
-                var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "Srdy", "Szpd"});
+                var values = connection.ReadVariables(new string[] { "encoder", "Loadcell_Mass", "Srdy",});
                 SharedVariables.EncoderRaw = Convert.ToDouble(values[0].Value);
                 SharedVariables.LoadcellScaled = Convert.ToDouble(values[1].Value);
                 SharedVariables.Servo_Rdy = Convert.ToBoolean(values[2].Value);
-                SharedVariables.Servo_ZSpd = Convert.ToBoolean(values[3].Value);
-            }
-
-            catch (NullReferenceException)
-            {
-                MessageBox.Show("Null Ref");
+               
             }
 
             catch (Exception ex)
@@ -131,21 +143,11 @@ namespace TensileTesterSharer
 
         }
 
-
-
         public void UpdateUItmr_Tick(object sender, EventArgs e)
         {
-            if (IBTest == true || FaceTest == true || ScrewTest == true)
-            {
-                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac) * -1);
-            }
-            else
-            {
-                SharedVariables.EncoderScaled = ((SharedVariables.EncoderRaw / SharedVariables.EncFac));
-            }
-
+            SharedVariables.EncoderScaled = SharedVariables.EncoderRaw / SharedVariables.EncFac;
             txt_Dist.Value = SharedVariables.EncoderScaled;
-            SharedVariables.TestMpa = ((SharedVariables.LoadcellScaled * 0.098)/250);
+            SharedVariables.TestMpa = ((SharedVariables.LoadcellScaled * 0.098)/25);
             SharedVariables.TestIBMpa = (SharedVariables.LoadcellScaled * 0.0098);
             txt_Kg.Value = SharedVariables.LoadcellScaled;
             if (SharedVariables.TestMpa > SharedVariables.MaxForce)
@@ -158,21 +160,28 @@ namespace TensileTesterSharer
                 SharedVariables.MaxKn = SharedVariables.TestIBMpa;
             }
 
-            if (!SharedVariables.TestComplete)
+            if (SharedVariables.ForceMpaSample1 > (SharedVariables.TestIBMpa + SharedVariables.BreakForce))// - SharedVariables.BreakForce)) // > SharedVariables.BreakForce)
+            {
+                TestComplete();
+
+            }
+
+            if (SharedVariables.TestStarted == true)
             {
                 txt_Force.Value = SharedVariables.TestIBMpa;
                 txtMaxForce.Value = SharedVariables.TestMpa;
             }
-            else if (SharedVariables.TestComplete == true)
+            else if (SharedVariables.TestStarted == false)
             {
                 txt_Force.Value = SharedVariables.MaxKn;
                 txtMaxForce.Value = SharedVariables.MaxForce;
             }
             if (SharedVariables.TestComplete == true)
             {
+                TestCompleteOneShot = true;
                 TestComplete();
             }
-            if (ReturnSelected == true && MOETest == true)
+            if (ReturnSelected == true)
             {
 
                 if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
@@ -182,20 +191,6 @@ namespace TensileTesterSharer
                 else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
                 {
                     SlideUpStop();
-                    ReturnSelected = false;
-                    btnReturn.IsChecked = false;
-                }
-            }
-            if (ReturnSelected == true && (IBTest == true || FaceTest == true || ScrewTest == true))
-            {
-
-                if (SharedVariables.EncoderScaled > SharedVariables.ReturnOffset)
-                {
-                    SlideDown();
-                }
-                else if (SharedVariables.EncoderScaled <= SharedVariables.ReturnOffset)
-                {
-                    SlideDownStop();
                     ReturnSelected = false;
                     btnReturn.IsChecked = false;
                 }
@@ -220,12 +215,7 @@ namespace TensileTesterSharer
 
         public void Chart()
         {
-            if (TestChart.Series.Count > 0)
-            {
-                TestChart.Series.Clear();
-
-            }
-
+            TestChart.Series.Clear();
             FastLineSeries fastline = new FastLineSeries();
             fastline.ItemsSource = (new DataGenerator()).DynamicData;
             fastline.XBindingPath = "Enc";
@@ -296,12 +286,7 @@ namespace TensileTesterSharer
             btn_Down.Background = new SolidColorBrush(Colors.Green);
             ManDown = false;
         }
-        /*
-        private void btnCal_Click(object sender, RoutedEventArgs e)
-        {
-            Calibrate();
-        }
-        */
+       
         private void Calibrate()
         {
             try
@@ -361,7 +346,7 @@ namespace TensileTesterSharer
 
         private void btnReturn_Checked(object sender, RoutedEventArgs e)
         {
-            if (MOETest == true || IBTest == true)
+            if (Autostart == false)
             {
                 ReturnSelected = true;
                 btnReturn.Background = new SolidColorBrush(Colors.Red);
@@ -369,7 +354,8 @@ namespace TensileTesterSharer
 
             else
             {
-                MessageBox.Show("Choose Test Return Type");
+                MessageBox.Show("Please Stop Test First");
+                btnReturn.IsChecked = false;
             }
         }
 
@@ -412,6 +398,7 @@ namespace TensileTesterSharer
                 
                 btnAutoStart.Content = "Test Running";
                 btnAutoStart.Background = new SolidColorBrush(Colors.Red);
+                ManSelect = false;
                 Autostart = true;
                 btnMOE.IsEnabled = false;
                 btnIB.IsEnabled = false;
@@ -421,182 +408,183 @@ namespace TensileTesterSharer
                 btn_Up.IsEnabled = false;
                 btn_Down.IsEnabled = false;
                 btnReturn.IsEnabled = false;
+                TestCompleteOneShot = true;
                 SharedVariables.TestComplete = false;
+                SharedVariables.TestStarted = true;
                 SharedVariables.MaxForce = 0;
                 SharedVariables.MaxKn = 0;
-                connection.Call("Tare");
-                connection.Call("ZeroEnc");
-                WriteSpeedRef();
+                SharedVariables.ResetChart = true;
+                SharedVariables.ForceMpaSample1 = 0;
+                try
+                {
+                    connection.Call("Tare");
+                    connection.Call("ZeroEnc");
+                    WriteSpeedRef();
+                }
+                catch (Exception)
+                {
+
+                    MessageBox.Show("Connection Lost, Please Check");
+                }
+                
                 Chart();
-
-                if (MOETest == true)
-                {
-                    SharedVariables.MOETestStarted = true;
-                    SharedVariables.IBTestStarted = false;
-                    SlideDown();
-                }
-                else if (IBTest == true || FaceTest == true || ScrewTest == true)
-                {
-                    SharedVariables.IBTestStarted = true;
-                    SharedVariables.MOETestStarted = false;
-                    SlideUP();
-                }
-
+                SharedVariables.MOETestStarted = true;
+                SlideDown();
             }
-
         }
 
         private void btnAutoStart_Unchecked(object sender, RoutedEventArgs e)
         {
-            TestComplete();
+           
+                TestComplete();
+            
         }
 
         public void TestComplete()
         {
-            btnAutoStart.Content = "Start";
-            btnAutoStart.Background = new SolidColorBrush(Colors.Green);
-            Autostart = false;
-            btnMOE.IsEnabled = true;
-            btnIB.IsEnabled = true;
-            btnFS.IsEnabled = true;
-            btnSH.IsEnabled = true;
-            btn_Man.IsEnabled = true;
-            btn_Up.IsEnabled = true;
-            btn_Down.IsEnabled = true;
-            btnReturn.IsEnabled = true;
-            TestStepCount = ++TestStepCount;
-            lblTestStep.Content = (TestSelected +"  "+ TestStepCount.ToString());
-            if(IBTest == true)
+            if (TestCompleteOneShot == true)
             {
-                if(TestStepCount == 1)
+                btnAutoStart.Content = "Start";
+                btnAutoStart.Background = new SolidColorBrush(Colors.Green);
+                Autostart = false;
+                btnMOE.IsEnabled = true;
+                btnIB.IsEnabled = true;
+                btnFS.IsEnabled = true;
+                btnSH.IsEnabled = true;
+                btn_Man.IsEnabled = true;
+                btn_Up.IsEnabled = true;
+                btn_Down.IsEnabled = true;
+                btnReturn.IsEnabled = true;
+                TestCompleteOneShot = false;
+                SharedVariables.TestStarted = false;
+                TestStepCount = ++TestStepCount;
+                lblTestStep.Content = (TestSelected + "     " + TestStepCount.ToString());
+                if (IBTest == true)
                 {
-                    SharedVariables.IB1T = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 2)
-                {
-                    SharedVariables.IB2B = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 3)
-                {
-                    SharedVariables.IB3T = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 4)
-                {
-                    SharedVariables.IB4B = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 5)
-                {
-                    SharedVariables.IB5T = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 6)
-                {
-                    SharedVariables.IB6B = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 7)
-                {
-                    SharedVariables.IB7T = SharedVariables.TestIBMpa;
-                }
-                if (TestStepCount == 8)
-                {
-                    SharedVariables.IB8B = SharedVariables.TestIBMpa;
-                    lblTestStep.Content = ("Test Complete");
-                    IBTest = false;
-                }
-               
-            }
-            if (MOETest == true)
-            {
-                if (TestStepCount == 1)
-                {
-                    SharedVariables.IB1Mpa = TestStepCount;
-                }
-                if (TestStepCount == 2)
-                {
-                    SharedVariables.IB2Mpa = TestStepCount;
-                }
-                if (TestStepCount == 3)
-                {
-                    SharedVariables.IB3Mpa = TestStepCount;
-                }
-                if (TestStepCount == 4)
-                {
-                    SharedVariables.IB4Mpa = TestStepCount;
-                }
-                if (TestStepCount == 5)
-                {
-                    SharedVariables.IB5Mpa = TestStepCount;
-                }
-                if (TestStepCount == 6)
-                {
-                    SharedVariables.IB6Mpa = TestStepCount;
-                }
-                if (TestStepCount == 7)
-                {
-                    SharedVariables.IB7Mpa = TestStepCount;
-                }
-                if (TestStepCount == 8)
-                {
-                    SharedVariables.IB8Mpa = TestStepCount;
-                    lblTestStep.Content = ("Test Complete");
-                    MOETest = false;
-                }
-                
-            }
+                    if (TestStepCount == 1)
+                    {
+                        SharedVariables.IB1T = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 2)
+                    {
+                        SharedVariables.IB2B = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 3)
+                    {
+                        SharedVariables.IB3T = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 4)
+                    {
+                        SharedVariables.IB4B = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 5)
+                    {
+                        SharedVariables.IB5T = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 6)
+                    {
+                        SharedVariables.IB6B = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 7)
+                    {
+                        SharedVariables.IB7T = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 8)
+                    {
+                        SharedVariables.IB8B = SharedVariables.MaxKn;
+                        lblTestStep.Content = ("Test Complete");
+                        IBTest = false;
+                        btnIB.IsChecked = false;
+                    }
 
-            if(FaceTest == true)
-            {
-               if(TestStepCount == 1)
-                {
-                    SharedVariables.Shf1 = 1;
                 }
-                if (TestStepCount == 2)
+                if (MOETest == true)
                 {
-                    SharedVariables.Shf2 = 1;
-                }
-                if (TestStepCount == 3)
-                {
-                    SharedVariables.Shf3 = 1;
-                }
-                if (TestStepCount == 4)
-                {
-                    SharedVariables.Shf4 = 1;
-                    lblTestStep.Content = ("Test Complete");
-                    FaceTest = false;
+                    if (TestStepCount == 1)
+                    {
+                        SharedVariables.IB1Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 2)
+                    {
+                        SharedVariables.IB2Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 3)
+                    {
+                        SharedVariables.IB3Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 4)
+                    {
+                        SharedVariables.IB4Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 5)
+                    {
+                        SharedVariables.IB5Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 6)
+                    {
+                        SharedVariables.IB6Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 7)
+                    {
+                        SharedVariables.IB7Mpa = SharedVariables.MaxForce;
+                    }
+                    if (TestStepCount == 8)
+                    {
+                        SharedVariables.IB8Mpa = SharedVariables.MaxForce;
+                        lblTestStep.Content = ("Test Complete");
+                        MOETest = false;
+                        btnMOE.IsChecked = false;
+                    }
+
                 }
 
-            }
-            if(ScrewTest == true)
-            {
-                if (TestStepCount == 1)
+                if (FaceTest == true)
                 {
-                    SharedVariables.She1 = 1;
-                }
-                if (TestStepCount == 2)
-                {
-                    SharedVariables.She1 = 2;
-                }
-                if (TestStepCount == 3)
-                {
-                    SharedVariables.She1 = 3;
-                }
-                if (TestStepCount == 4)
-                {
-                    SharedVariables.She1 = 4;
-                    lblTestStep.Content = ("Test Complete");
-                    ScrewTest = false;
-                }
-            }
+                    if (TestStepCount == 1)
+                    {
+                        SharedVariables.Shf1 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 2)
+                    {
+                        SharedVariables.Shf2 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 3)
+                    {
+                        SharedVariables.Shf3 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 4)
+                    {
+                        SharedVariables.Shf4 = SharedVariables.MaxKn;
+                        lblTestStep.Content = ("Test Complete");
+                        FaceTest = false;
+                        btnFS.IsChecked = false;
+                    }
 
-
-                if (SharedVariables.MOETestStarted == true)
-            {
-                SharedVariables.MOETestStarted = false;
+                }
+                if (ScrewTest == true)
+                {
+                    if (TestStepCount == 1)
+                    {
+                        SharedVariables.She1 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 2)
+                    {
+                        SharedVariables.She1 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 3)
+                    {
+                        SharedVariables.She1 = SharedVariables.MaxKn;
+                    }
+                    if (TestStepCount == 4)
+                    {
+                        SharedVariables.She1 = SharedVariables.MaxKn;
+                        lblTestStep.Content = ("Test Complete");
+                        ScrewTest = false;
+                        btnSH.IsChecked = false;
+                    }
+                }
                 SlideDownStop();
-            }
-            else if (SharedVariables.IBTestStarted == true || FaceTest == true || ScrewTest == true)
-            {
-                SharedVariables.IBTestStarted = false;
-                SlideUpStop();
+              
             }
 
         }
